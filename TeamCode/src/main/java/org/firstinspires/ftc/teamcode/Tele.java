@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
-@TeleOp(name = "OurTeleOp", group = "Concept")
-public class OurTeleOp extends OpMode {
+@TeleOp(name = "Tele", group="Robot")
+public class Tele extends OpMode {
+    Hardware robot = new Hardware();
 
     DcMotor frontLeft;
     DcMotor frontRight;
@@ -17,14 +17,15 @@ public class OurTeleOp extends OpMode {
     @Override
     public void init() {
 
-        frontLeft = hardwareMap.dcMotor.get("fl");
-        frontRight = hardwareMap.dcMotor.get("fr");
-        backLeft = hardwareMap.dcMotor.get("bl");
-        backRight = hardwareMap.dcMotor.get("br");
+        telemetry.addData("Robot:", "Initializing");
+        telemetry.update();
 
-        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        robot.init(hardwareMap);
 
+        robot.initializeDriveMotors(robot);
+
+        telemetry.addData("Robot:", "Ready");
+        telemetry.update();
     }
 
     @Override
