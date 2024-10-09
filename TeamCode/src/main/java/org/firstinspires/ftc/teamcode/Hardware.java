@@ -24,6 +24,8 @@ public class Hardware {
         backLeft = hardwareMap.get(DcMotor.class, "bl");
         backRight = hardwareMap.get(DcMotor.class, "br");
 
+        odometrySensor = hardwareMap.get(SparkFunOTOS.class, "OTOS");
+
         frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
         backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
