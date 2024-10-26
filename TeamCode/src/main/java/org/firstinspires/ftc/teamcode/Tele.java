@@ -20,6 +20,8 @@ public class Tele extends OpMode {
     double backLeftPower;
     double backRightPower;
     double speedLimit;
+    public SparkFunOTOS OTOS = robot.odometrySensor;
+    public SparkfunOdometryLocalizer localizer = new SparkfunOdometryLocalizer(OTOS);
 
     @Override
     public void init() {
@@ -31,24 +33,45 @@ public class Tele extends OpMode {
 
         Hardware.initializeDriveMotors(robot);
 
-        telemetry.addData("Robot:", "Ready");
+        if (OTOS.isConnected() == false) {
+            telemetry.addData("OTOS", "Not Connected");
+            telemetry.update();
+        }
+
+        OTOS.begin();
+        telemetry.addData("Calibrating IMU:", "Calibrating (1/2)");
+        telemetry.update();
+
+        OTOS.calibrateImu(100, true);
+        telemetry.addData("Calibrating IMU:", "Calibrating (2/2)");
+        telemetry.update();
+
+        OTOS.setLinearScalar(1.0);
+        OTOS.setAngularScalar(1.0);
+
+        OTOS.resetTracking();
+
+        telemetry.addData("OTOS", "Ready");
+        telemetry.update();
+
+        telemetry.addData("Robot", "Ready");
         telemetry.update();
     }
 
     @Override
     public void start() {
 
-        robot.odometrySensor.resetTracking();
-
     }
 
     @Override
     public void loop() {
+        // Forward/backward movement
         robot.frontLeft.setPower(-gamepad1.left_stick_y + gamepad1.left_stick_x);
         robot.frontRight.setPower(-gamepad1.left_stick_y - gamepad1.left_stick_x);
         robot.backLeft.setPower(-gamepad1.left_stick_y - gamepad1.left_stick_x);
         robot.backRight.setPower(-gamepad1.left_stick_y + gamepad1.left_stick_x);
 
+        // Turning movement
         if (gamepad1.right_trigger > .5) {
             speedLimit = 50;
         } else {
@@ -74,7 +97,6 @@ public class Tele extends OpMode {
         backLeftPower = (y - x + rx) / denominator;
         backRightPower = (y + x - rx) / denominator;
 
-
         if ((Math.abs(gamepad1.right_stick_x) > 0.1) || (Math.abs(gamepad1.right_stick_y) > 0.1) || (Math.abs(gamepad1.left_stick_x) > 0.1) || (Math.abs(gamepad1.left_stick_y) > 0.1)) {
             robot.frontLeft.setPower(frontLeftPower * speedLimitValue);
             robot.backLeft.setPower(backLeftPower * speedLimitValue);
@@ -86,6 +108,12 @@ public class Tele extends OpMode {
             robot.frontRight.setPower(0);
             robot.backRight.setPower(0);
         }
+
+        //
+
+
+        //
+
 
         telemetry.addData("Stick X:", gamepad1.left_stick_x);
         telemetry.addData("Stick Y:", gamepad1.left_stick_y);
