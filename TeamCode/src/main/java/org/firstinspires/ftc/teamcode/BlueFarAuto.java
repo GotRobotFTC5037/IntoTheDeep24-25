@@ -62,9 +62,9 @@ public class BlueFarAuto extends LinearOpMode {
         if (isStopRequested()) return;
         sleep(500);
 
-        robot.escapement.setPosition(0);
-        robot.kickstand.setPosition(0);
-        robot.deliveryLiftMain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        robot.escapement.setPosition(0);
+//        robot.kickstand.setPosition(0);
+//        robot.deliveryLiftMain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Auto Program Starts:
 
@@ -109,14 +109,14 @@ public class BlueFarAuto extends LinearOpMode {
         robot.backRight.setPower(-0.15);
         sleep(550);
 
-        robot.deliveryLiftMain.setPower(-0.5);
-        sleep(1200);
-
-        robot.deliveryLiftMain.setPower(0.2);
-        sleep(1950);
-
-        robot.specimenGripper.setPosition(robot.specimenGripperUngrip);
-        sleep(1000);
+//        robot.deliveryLiftMain.setPower(-0.5);
+//        sleep(1200);
+//
+//        robot.deliveryLiftMain.setPower(0.2);
+//        sleep(1950);
+//
+//        robot.specimenGripper.setPosition(robot.specimenGripperUngrip);
+//        sleep(1000);
 
         robot.frontLeft.setPower(0.25);
         robot.backLeft.setPower(0.25);

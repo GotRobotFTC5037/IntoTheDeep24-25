@@ -3,11 +3,10 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 
-@TeleOp(name = "Tele", group="Robot")
-public class Tele extends OpMode {
+@TeleOp(name = "Tele_2_electric_bugaloo", group="Robot")
+public class Tele_2_electric_bugaloo extends OpMode {
     Hardware robot = new Hardware();
 
     double y;
@@ -32,35 +31,36 @@ public class Tele extends OpMode {
 
         Hardware.initializeDriveMotors(robot);
 
-//        if (!OTOS.isConnected()) {
-//            telemetry.addData("OTOS", "Not Connected");
-//            telemetry.update();
-//        }
-//
-//        OTOS.begin();
-//        telemetry.addData("Calibrating IMU:", "Calibrating (1/2)");
-//        telemetry.update();
-//
-//        OTOS.calibrateImu(100, true);
-//        telemetry.addData("Calibrating IMU:", "Calibrating (2/2)");
-//        telemetry.update();
-//
-//        OTOS.setLinearScalar(1.0);
-//        OTOS.setAngularScalar(1.0);
-//
-//        OTOS.resetTracking();
-//
-//        telemetry.addData("OTOS", "Ready");
-//        telemetry.update();
-//
-//
-//        telemetry.addData("Robot", "Ready");
-//        telemetry.update();
-    }
+        if (!OTOS.isConnected()) {
+            telemetry.addData("OTOS", "Not Connected");
+            telemetry.update();
+        }
 
+        OTOS.begin();
+        telemetry.addData("Calibrating IMU:", "Calibrating (1/2)");
+        telemetry.update();
+
+        OTOS.calibrateImu(100, true);
+        telemetry.addData("Calibrating IMU:", "Calibrating (2/2)");
+        telemetry.update();
+
+        OTOS.setLinearScalar(1.0);
+        OTOS.setAngularScalar(1.0);
+
+        OTOS.resetTracking();
+
+        telemetry.addData("OTOS", "Ready");
+        telemetry.update();
+
+
+        telemetry.addData("Robot", "Ready");
+        telemetry.update();
+    }
+    double gripperAngle = .39;
     public void start() {
 //        robot.escapement.setPosition(0);
 //        robot.kickstand.setPosition(0);
+
     }
 
     @Override
@@ -106,7 +106,7 @@ public class Tele extends OpMode {
             robot.frontRight.setPower(0);
             robot.backRight.setPower(0);
         }
-
+/*
         int maxArmPosition = 2150;
         robot.intakeArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         // Intake slide
@@ -144,10 +144,10 @@ public class Tele extends OpMode {
             robot.deliveryLiftMain.setPower(0);
             robot.deliveryLiftAux.setPower(0);
         }
-//        if (robot.auxLiftUpLimitSwitch.getVoltage() < 2) {
-//            robot.deliveryLiftMain.setPower(0);
-//            robot.deliveryLiftAux.setPower(0);
-//        }
+        if (robot.auxLiftUpLimitSwitch.getVoltage() < 2) {
+            robot.deliveryLiftMain.setPower(0);
+            robot.deliveryLiftAux.setPower(0);
+        }
 //        if (gamepad2.left_stick_y < 0) {
 //            if ((robot.mainLiftUpLimitSwitch.getVoltage()/3.3) < 0.5) {
 //                robot.deliveryLiftMain.setPower(-gamepad2.left_stick_y);
@@ -167,8 +167,6 @@ public class Tele extends OpMode {
 //            }
 //        }
 
-        if (gamepad2.left_stick_y < 0 && robot.mainLiftUpLimitSwitch.getVoltage() > 2)
-
         if (gamepad2.a || (robot.mainLiftDownLimitSwitch.getVoltage() > 2)) {
             robot.bucket.setPosition(0.4);
         } else if (robot.deliveryLiftMain.getPower() < 0.1) {
@@ -182,49 +180,70 @@ public class Tele extends OpMode {
         } else {
             robot.escapement.setPosition(0);
         }
-
-        if (gamepad2.left_bumper) {
-            robot.specimenGripper.setPosition(0);
+*/
+        if (gamepad2.dpad_down) {
+            robot.specimenGripper.setPosition(1);
         }
-        if (gamepad2.left_trigger > 0.5) {
-            robot.specimenGripper.setPosition(0.36);
+        if (gamepad2.dpad_up) {
+            robot.specimenGripper.setPosition(0.3);
         }
-        if (gamepad2.a) {
-            robot.kickstand.setPosition(0.5);
-        }
-
-//        Escapement
-        if (gamepad2.y) {
-            robot.escapement.setPosition(0.8);
+        if (gamepad2.dpad_left) {
+            robot.specimenGripper.setPosition(.55);
         }
 
-//         Specimen Gripper
-        if (gamepad2.left_bumper) {
-            robot.specimenGripper.setPosition(robot.specimenGripperUngrip);
+        if (gamepad2.right_stick_x < -0.1) {
+            if (gripperAngle >= 1) {
+                gripperAngle = 1;
+            } else {
+                gripperAngle = gripperAngle + .005;
+            }
+        } else if (gamepad2.right_stick_x > 0.1) {
+            if (gripperAngle <= 0) {
+                gripperAngle = 0;
+            } else {
+                gripperAngle = gripperAngle - .005;
+            }
         }
+
+        robot.wrist.setPosition(gripperAngle);
+
+//        if (gamepad2.a) {
+//            robot.kickstand.setPosition(0.5);
+//        }
+
+        // Escapement
+//        if (gamepad2.y) {
+//            robot.escapement.setPosition(0.8);
+//        }
+
+        // Specimen Gripper
+//        if (gamepad2.left_bumper) {
+//            robot.specimenGripper.setPosition(robot.specimenGripperUngrip);
+//        }
 
 //        telemetry.addData("Stick X:", gamepad1.left_stick_x);
 //        telemetry.addData("Stick Y:", gamepad1.left_stick_y);
 //
 //        telemetry.addData("Intake Switch", robot.intakeLimitSwitch.getVoltage());
-        telemetry.addData("Main lift up Switch", robot.mainLiftUpLimitSwitch.getVoltage());
-        telemetry.addData("Main lift down Switch", robot.mainLiftDownLimitSwitch.getVoltage());
-        telemetry.addData("Aux lift up Switch", robot.auxLiftUpLimitSwitch.getVoltage());
-        telemetry.addData("Aux lift down Switch", robot.auxLiftDownLimitSwitch.getVoltage());
+//        telemetry.addData("Main lift up Switch", robot.mainLiftUpLimitSwitch.getVoltage());
+//        telemetry.addData("Main lift down Switch", robot.mainLiftDownLimitSwitch.getVoltage());
+//        telemetry.addData("Aux lift up Switch", robot.auxLiftUpLimitSwitch.getVoltage());
+//        telemetry.addData("Aux lift down Switch", robot.auxLiftDownLimitSwitch.getVoltage());
 
-//        telemetry.addData("OTOS (X value)", robot.odometrySensor.getPosition().x);
-//        telemetry.addData("OTOS (Y value)", robot.odometrySensor.getPosition().y);
-//        telemetry.addData("OTOS (H value)", robot.odometrySensor.getPosition().h);
-//        telemetry.addData("OTOS (Velocity X)", robot.odometrySensor.getVelocity().x);
-//        telemetry.addData("OTOS (Velocity Y)", robot.odometrySensor.getVelocity().y);
-//        telemetry.addData("OTOS (Acceleration X)", robot.odometrySensor.getAcceleration().x);
-//        telemetry.addData("OTOS (Acceleration Y)", robot.odometrySensor.getAcceleration().y);
+        telemetry.addData("OTOS (X value)", robot.odometrySensor.getPosition().x);
+        telemetry.addData("OTOS (Y value)", robot.odometrySensor.getPosition().y);
+        telemetry.addData("OTOS (H value)", robot.odometrySensor.getPosition().h);
+        telemetry.addData("OTOS (Velocity X)", robot.odometrySensor.getVelocity().x);
+        telemetry.addData("OTOS (Velocity Y)", robot.odometrySensor.getVelocity().y);
+        telemetry.addData("OTOS (Acceleration X)", robot.odometrySensor.getAcceleration().x);
+        telemetry.addData("OTOS (Acceleration Y)", robot.odometrySensor.getAcceleration().y);
 
 //        telemetry.addData("Bucket Position", robot.bucket.getPosition());
-//        telemetry.addData("Gripper Position", robot.specimenGripper.getPosition());
+//          telemetry.addData("Gripper Position", robot.specimenGripper.getPosition());
 //        telemetry.addData("Intake Arm Switch", robot.intakeLimitSwitch.getVoltage());
 //        telemetry.addData("Intake Arm Power", robot.intakeArm.getPower());
 //        telemetry.addData("Intake Arm Encoder Output", robot.intakeArm.getCurrentPosition());
+//        telemetry.addData("GripperAngle", gripperAngle);
 
         telemetry.update();
     }

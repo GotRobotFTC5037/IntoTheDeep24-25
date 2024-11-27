@@ -24,6 +24,7 @@ public class Hardware {
     public Servo escapement = null;
     public Servo kickstand = null;
     public Servo bucket = null;
+    public Servo wrist = null;
 
     public AnalogInput intakeLimitSwitch = null;
     public AnalogInput mainLiftDownLimitSwitch = null;
@@ -58,6 +59,7 @@ public class Hardware {
         escapement = hardwareMap.get(Servo.class, "escapement");
         kickstand = hardwareMap.get(Servo.class, "kickstand");
         bucket = hardwareMap.get(Servo.class, "bucket");
+//        wrist = hardwareMap.get(Servo.class, "wrist");
 
         odometrySensor = hardwareMap.get(SparkFunOTOS.class, "OTOS");
 
