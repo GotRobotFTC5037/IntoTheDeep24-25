@@ -167,7 +167,7 @@ public class Tele extends OpMode {
 //            }
 //        }
 
-        if (gamepad2.left_stick_y < 0 && robot.mainLiftUpLimitSwitch.getVoltage() > 2)
+//        if (gamepad2.left_stick_y < 0 && robot.mainLiftUpLimitSwitch.getVoltage() > 2)
 
         if (gamepad2.a || (robot.mainLiftDownLimitSwitch.getVoltage() > 2)) {
             robot.bucket.setPosition(0.4);
