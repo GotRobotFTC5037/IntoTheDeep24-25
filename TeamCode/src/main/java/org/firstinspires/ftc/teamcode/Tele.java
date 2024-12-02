@@ -126,24 +126,39 @@ public class Tele extends OpMode {
             robot.stars.setPower(-1);
         }
 
-        double downSpeedLimit = 0.25;
+        double downwardsSpeedLimit = 0.25;
         // Delivery lift
-        if (gamepad2.left_stick_y < 0 && robot.mainLiftUpLimitSwitch.getVoltage() > 2) {
+
+        // New delivery lift code:
+        if (gamepad2.left_sticky < 0 && robot.mainLiftUpLimitSwitch.getVoltage() > 2 && robot.auxLiftUpLimitSwitch.getVoltage() > 2) {
             robot.deliveryLiftMain.setPower(gamepad2.left_stick_y);
-            robot.deliveryLiftAux.setPower(0);
-        } else if (gamepad2.left_stick_y < 0 && robot.auxLiftUpLimitSwitch.getVoltage() > 2) {
-            robot.deliveryLiftAux.setPower(-gamepad2.left_stick_y);
-            robot.deliveryLiftMain.setPower(0);
-        } else if (gamepad2.left_stick_y > 0 && robot.auxLiftDownLimitSwitch.getVoltage() > 2) {
-            robot.deliveryLiftAux.setPower(-gamepad2.left_stick_y);
-            robot.deliveryLiftMain.setPower(0);
-        } else if (gamepad2.left_stick_y > 0 && robot.mainLiftDownLimitSwitch.getVoltage() > 2) {
-            robot.deliveryLiftMain.setPower(gamepad2.left_stick_y * downSpeedLimit);
-            robot.deliveryLiftAux.setPower(0);
+            robot.deliveryLiftAux.setPower(gamepad2.left_stick_y);
+        } else if (gamepad2.left_sticky > 0 && robot.mainLiftDownLimitSwitch.getVoltage() > 2 && robot.auxLiftDownLimitSwitch.getVoltage() > 2) {
+            robot.deliveryLiftMain.setPower(-gamepad2.left_stick_y * downwardsSpeedLimit);
+            robot.deliveryLiftAux.setPower(-gamepad2.left_stick_y * downwardsSpeedLimit);
         } else {
             robot.deliveryLiftMain.setPower(0);
             robot.deliveryLiftAux.setPower(0);
         }
+
+
+        // Previous delivery lift code:
+        // if (gamepad2.left_stick_y < 0 && robot.mainLiftUpLimitSwitch.getVoltage() > 2) {
+        //     robot.deliveryLiftMain.setPower(gamepad2.left_stick_y);
+        //     robot.deliveryLiftAux.setPower(0);
+        // } else if (gamepad2.left_stick_y < 0 && robot.auxLiftUpLimitSwitch.getVoltage() > 2) {
+        //     robot.deliveryLiftAux.setPower(-gamepad2.left_stick_y);
+        //     robot.deliveryLiftMain.setPower(0);
+        // } else if (gamepad2.left_stick_y > 0 && robot.auxLiftDownLimitSwitch.getVoltage() > 2) {
+        //     robot.deliveryLiftAux.setPower(-gamepad2.left_stick_y);
+        //     robot.deliveryLiftMain.setPower(0);
+        // } else if (gamepad2.left_stick_y > 0 && robot.mainLiftDownLimitSwitch.getVoltage() > 2) {
+        //     robot.deliveryLiftMain.setPower(gamepad2.left_stick_y * downSpeedLimit);
+        //     robot.deliveryLiftAux.setPower(0);
+        // } else {
+        //     robot.deliveryLiftMain.setPower(0);
+        //     robot.deliveryLiftAux.setPower(0);
+        // }
 //        if (robot.auxLiftUpLimitSwitch.getVoltage() < 2) {
 //            robot.deliveryLiftMain.setPower(0);
 //            robot.deliveryLiftAux.setPower(0);
