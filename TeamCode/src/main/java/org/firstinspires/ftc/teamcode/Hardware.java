@@ -95,11 +95,7 @@ public class Hardware {
         robot.backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-//        robot.odometrySensor.begin();
-//        robot.odometrySensor.calibrateImu(100, true);
-//        robot.odometrySensor.setLinearScalar(1.0);
-//        robot.odometrySensor.setAngularScalar(1.0);
-//        robot.odometrySensor.resetTracking();
+
     }
 }
 
