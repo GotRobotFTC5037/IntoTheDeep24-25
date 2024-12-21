@@ -185,13 +185,13 @@ public class Tele extends OpMode {
 //        telemetry.addData("Stick Y:", gamepad1.left_stick_y);
 //
 //        telemetry.addData("Intake Switch", robot.intakeLimitSwitch.getVoltage());
-        telemetry.addData("Main lift up Switch", robot.mainLiftUpLimitSwitch.getVoltage());
-        telemetry.addData("Main lift down Switch", robot.mainLiftDownLimitSwitch.getVoltage());
-        telemetry.addData("Aux lift up Switch", robot.auxLiftUpLimitSwitch.getVoltage());
-        telemetry.addData("Aux lift down Switch", robot.auxLiftDownLimitSwitch.getVoltage());
+//        telemetry.addData("Main lift up Switch", robot.mainLiftUpLimitSwitch.getVoltage());
+//        telemetry.addData("Main lift down Switch", robot.mainLiftDownLimitSwitch.getVoltage());
+//        telemetry.addData("Aux lift up Switch", robot.auxLiftUpLimitSwitch.getVoltage());
+//        telemetry.addData("Aux lift down Switch", robot.auxLiftDownLimitSwitch.getVoltage());
 
 //        telemetry.addData("OTOS (X value)", robot.odometrySensor.getPosition().x);
-//        telemetry.addData("OTOS (Y value)", robot.odometrySensor.getPosition().y);
+        telemetry.addData("OTOS (Y value)", robot.odometrySensor.getPosition().y * robot.LINEAR_SCALAR);
 //        telemetry.addData("OTOS (H value)", robot.odometrySensor.getPosition().h);
 //        telemetry.addData("OTOS (Velocity X)", robot.odometrySensor.getVelocity().x);
 //        telemetry.addData("OTOS (Velocity Y)", robot.odometrySensor.getVelocity().y);

@@ -12,8 +12,8 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
-@Autonomous(name = "Red Close Auto", group = "Auto")
-public class RedCloseAuto extends LinearOpMode {
+@Autonomous(name = "Left to Park Auto", group = "Auto")
+public class LeftToPark  extends LinearOpMode {
     Hardware robot = new Hardware();
 //    public SparkFunOTOS OTOS = robot.odometrySensor;
 //    public SparkfunOdometryLocalizer localizer = new SparkfunOdometryLocalizer(OTOS);
@@ -65,7 +65,6 @@ public class RedCloseAuto extends LinearOpMode {
         robot.escapement.setPosition(0);
         robot.kickstand.setPosition(0);
         robot.deliveryLiftMain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
         // Auto Program Starts:
 
 //        Pose2d currentPose = drive.getPoseEstimate();
@@ -77,54 +76,10 @@ public class RedCloseAuto extends LinearOpMode {
 //
 //        drive.followTrajectorySequence(toBars);
 
-
-
-        // Moves 24 inches exactly:
-        robot.frontLeft.setPower(-0.25);
-        robot.backLeft.setPower(-0.25);
-        robot.frontRight.setPower(-0.25);
-        robot.backRight.setPower(-0.25);
-        sleep(1650);
-
-        // Turns 90 degrees to the right
-        robot.frontLeft.setPower(0.25);
-        robot.backLeft.setPower(0.25);
-        robot.frontRight.setPower(-0.25);
-        robot.backRight.setPower(-0.25);
-        sleep(2220);
-
-        robot.frontLeft.setPower(-0.25);
-        robot.backLeft.setPower(-0.25);
-        robot.frontRight.setPower(-0.25);
-        robot.backRight.setPower(-0.25);
-        sleep(1650);
-
-        robot.frontLeft.setPower(-0.25);
-        robot.backLeft.setPower(-0.25);
-        robot.frontRight.setPower(0.25);
-        robot.backRight.setPower(0.25);
-        sleep(1950);
-        robot.frontLeft.setPower(0);
-        robot.backLeft.setPower(0);
-        robot.frontRight.setPower(0);
-        robot.backRight.setPower(0);
-        sleep(1000);
-        robot.deliveryLiftMain.setPower(-0.5);
-        sleep(1100);
-        robot.frontLeft.setPower(-0.15);
-        robot.backLeft.setPower(-0.15);
-        robot.frontRight.setPower(-0.15);
-        robot.backRight.setPower(-0.15);
-        sleep(400);
-        robot.deliveryLiftMain.setPower(0.2);
-        sleep(1950);
-//        robot.specimenGripper.setPosition(robot.specimenGripperUngrip);
-//        sleep(1000);
-
-        robot.frontLeft.setPower(0.25);
-        robot.backLeft.setPower(0.25);
-        robot.frontRight.setPower(0.25);
-        robot.backRight.setPower(0.25);
-        sleep(2500);
+        robot.frontLeft.setPower(-0.3);
+        robot.backLeft.setPower(-0.3);
+        robot.frontRight.setPower(-0.3);
+        robot.backRight.setPower(-0.3);
+        sleep(3500);
     }
 }

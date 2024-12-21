@@ -1,19 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-
-@Autonomous(name = "To Park Auto", group = "Auto")
-public class ToPark extends LinearOpMode {
+@Autonomous(name = "Right to Park Auto", group = "Auto")
+public class RightToPark extends LinearOpMode {
     Hardware robot = new Hardware();
 //    public SparkFunOTOS OTOS = robot.odometrySensor;
 //    public SparkfunOdometryLocalizer localizer = new SparkfunOdometryLocalizer(OTOS);
@@ -65,7 +58,6 @@ public class ToPark extends LinearOpMode {
         robot.escapement.setPosition(0);
         robot.kickstand.setPosition(0);
         robot.deliveryLiftMain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
         // Auto Program Starts:
 
 //        Pose2d currentPose = drive.getPoseEstimate();
@@ -82,6 +74,5 @@ public class ToPark extends LinearOpMode {
         robot.frontRight.setPower(-0.5);
         robot.backRight.setPower(-0.5);
         sleep(1500);
-
     }
 }

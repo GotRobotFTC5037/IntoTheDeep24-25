@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.drive.MecanumDrive;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -8,6 +9,7 @@ import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 public class Hardware {
 
@@ -32,6 +34,10 @@ public class Hardware {
     public AnalogInput auxLiftDownLimitSwitch = null;
     public AnalogInput auxLiftUpLimitSwitch = null;
     public SparkFunOTOS odometrySensor;
+
+    public OTOSMecanumDrive drive;
+    public VoltageSensor batteryVoltageSensor;
+
     HardwareMap hardwareMap = null;
 
     public Hardware() {
@@ -42,6 +48,7 @@ public class Hardware {
     public double escapementClosed = 0;
     public double kickstandDown = 0;
     public double specimenGripperUngrip = 0;
+    public double LINEAR_SCALAR = 1.226235304336275;
 
     public void init(HardwareMap hardwareMap) {
 
@@ -59,9 +66,12 @@ public class Hardware {
         escapement = hardwareMap.get(Servo.class, "escapement");
         kickstand = hardwareMap.get(Servo.class, "kickstand");
         bucket = hardwareMap.get(Servo.class, "bucket");
+        batteryVoltageSensor = hardwareMap.voltageSensor.get("Expansion Hub 2");
 //        wrist = hardwareMap.get(Servo.class, "wrist");
 
         odometrySensor = hardwareMap.get(SparkFunOTOS.class, "OTOS");
+
+        drive = new OTOSMecanumDrive(frontLeft, frontRight, backLeft, backRight, odometrySensor, batteryVoltageSensor);
 
         mainLiftDownLimitSwitch = hardwareMap.get(AnalogInput.class, "main_lift_down");
         mainLiftUpLimitSwitch = hardwareMap.get(AnalogInput.class, "main_lift_up");
@@ -95,6 +105,11 @@ public class Hardware {
         robot.backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        robot.odometrySensor.calibrateImu();
+        robot.odometrySensor.setAngularScalar(0.997707296347086);
+        robot.odometrySensor.setLinearScalar(1.0);
+        robot.odometrySensor.setOffset(new SparkFunOTOS.Pose2D(2.25,7.75,0));
+        robot.odometrySensor.resetTracking();
 
     }
 }
