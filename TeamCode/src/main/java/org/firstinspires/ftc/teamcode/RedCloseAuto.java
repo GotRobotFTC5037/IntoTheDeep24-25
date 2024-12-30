@@ -15,8 +15,8 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 @Autonomous(name = "Red Close Auto", group = "Auto")
 public class RedCloseAuto extends LinearOpMode {
     Hardware robot = new Hardware();
-//    public SparkFunOTOS OTOS = robot.odometrySensor;
-//    public SparkfunOdometryLocalizer localizer = new SparkfunOdometryLocalizer(OTOS);
+    public SparkFunOTOS OTOS = robot.odometrySensor;
+    public SparkfunOdometryLocalizer localizer = new SparkfunOdometryLocalizer(OTOS);
 
 
 
@@ -33,28 +33,28 @@ public class RedCloseAuto extends LinearOpMode {
 //        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
-//        if (!OTOS.isConnected()) {
-//            telemetry.addData("OTOS", "Not Connected");
-//            telemetry.update();
-//        }
-//
-//        OTOS.begin();
-//        telemetry.addData("Calibrating IMU:", "Calibrating (1/2)");
-//        telemetry.update();
-//
-//        OTOS.calibrateImu(100, true);
-//        telemetry.addData("Calibrating IMU:", "Calibrating (2/2)");
-//        telemetry.update();
-//
-//        OTOS.setLinearScalar(1.0);
-//        OTOS.setAngularScalar(1.0);
-//
-//        OTOS.resetTracking();
-//
-//        telemetry.addData("OTOS", "Ready");
-//        telemetry.update();
-//
-//        Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));
+        if (!OTOS.isConnected()) {
+            telemetry.addData("OTOS", "Not Connected");
+            telemetry.update();
+        }
+
+        OTOS.begin();
+        telemetry.addData("Calibrating IMU:", "Calibrating (1/2)");
+        telemetry.update();
+
+        OTOS.calibrateImu(100, true);
+        telemetry.addData("Calibrating IMU:", "Calibrating (2/2)");
+        telemetry.update();
+
+        OTOS.setLinearScalar(1.0);
+        OTOS.setAngularScalar(1.0);
+
+        OTOS.resetTracking();
+
+        telemetry.addData("OTOS", "Ready");
+        telemetry.update();
+
+        Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));
 //        drive.setPoseEstimate(startPose);
 
         waitForStart();
@@ -66,65 +66,65 @@ public class RedCloseAuto extends LinearOpMode {
         robot.kickstand.setPosition(0);
         robot.deliveryLiftMain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+//        otosDrive(2, 7, 8, 2);
+//
+//        double targetX = 0;
+//        double targetY = 0;
+//        double targetHeading = 0;
+//        int maxTime = 0;
+//        otosDrive(targetX, targetY, targetHeading, maxTime);
+
         // Auto Program Starts:
 
-//        Pose2d currentPose = drive.getPoseEstimate();
+//        // Moves 24 inches exactly:
+//        robot.frontLeft.setPower(-0.25);
+//        robot.backLeft.setPower(-0.25);
+//        robot.frontRight.setPower(-0.25);
+//        robot.backRight.setPower(-0.25);
+//        sleep(1650);
 //
+//        // Turns 90 degrees to the right
+//        robot.frontLeft.setPower(0.25);
+//        robot.backLeft.setPower(0.25);
+//        robot.frontRight.setPower(-0.25);
+//        robot.backRight.setPower(-0.25);
+//        sleep(2220);
 //
-//        TrajectorySequence toBars = drive.trajectorySequenceBuilder(startPose)
-//                .forward(10)
-//                .build();
+//        robot.frontLeft.setPower(-0.25);
+//        robot.backLeft.setPower(-0.25);
+//        robot.frontRight.setPower(-0.25);
+//        robot.backRight.setPower(-0.25);
+//        sleep(1650);
 //
-//        drive.followTrajectorySequence(toBars);
-
-
-
-        // Moves 24 inches exactly:
-        robot.frontLeft.setPower(-0.25);
-        robot.backLeft.setPower(-0.25);
-        robot.frontRight.setPower(-0.25);
-        robot.backRight.setPower(-0.25);
-        sleep(1650);
-
-        // Turns 90 degrees to the right
-        robot.frontLeft.setPower(0.25);
-        robot.backLeft.setPower(0.25);
-        robot.frontRight.setPower(-0.25);
-        robot.backRight.setPower(-0.25);
-        sleep(2220);
-
-        robot.frontLeft.setPower(-0.25);
-        robot.backLeft.setPower(-0.25);
-        robot.frontRight.setPower(-0.25);
-        robot.backRight.setPower(-0.25);
-        sleep(1650);
-
-        robot.frontLeft.setPower(-0.25);
-        robot.backLeft.setPower(-0.25);
-        robot.frontRight.setPower(0.25);
-        robot.backRight.setPower(0.25);
-        sleep(1950);
-        robot.frontLeft.setPower(0);
-        robot.backLeft.setPower(0);
-        robot.frontRight.setPower(0);
-        robot.backRight.setPower(0);
-        sleep(1000);
-        robot.deliveryLiftMain.setPower(-0.5);
-        sleep(1100);
-        robot.frontLeft.setPower(-0.15);
-        robot.backLeft.setPower(-0.15);
-        robot.frontRight.setPower(-0.15);
-        robot.backRight.setPower(-0.15);
-        sleep(400);
-        robot.deliveryLiftMain.setPower(0.2);
-        sleep(1950);
-//        robot.specimenGripper.setPosition(robot.specimenGripperUngrip);
+//        robot.frontLeft.setPower(-0.25);
+//        robot.backLeft.setPower(-0.25);
+//        robot.frontRight.setPower(0.25);
+//        robot.backRight.setPower(0.25);
+//        sleep(1950);
+//        robot.frontLeft.setPower(0);
+//        robot.backLeft.setPower(0);
+//        robot.frontRight.setPower(0);
+//        robot.backRight.setPower(0);
 //        sleep(1000);
-
-        robot.frontLeft.setPower(0.25);
-        robot.backLeft.setPower(0.25);
-        robot.frontRight.setPower(0.25);
-        robot.backRight.setPower(0.25);
-        sleep(2500);
+//        robot.deliveryLiftMain.setPower(-0.5);
+//        sleep(1100);
+//        robot.frontLeft.setPower(-0.15);
+//        robot.backLeft.setPower(-0.15);
+//        robot.frontRight.setPower(-0.15);
+//        robot.backRight.setPower(-0.15);
+//        sleep(400);
+//        robot.deliveryLiftMain.setPower(0.2);
+//        sleep(1950);
+////        robot.specimenGripper.setPosition(robot.specimenGripperUngrip);
+////        sleep(1000);
+//
+//        robot.frontLeft.setPower(0.25);
+//        robot.backLeft.setPower(0.25);
+//        robot.frontRight.setPower(0.25);
+//        robot.backRight.setPower(0.25);
+//        sleep(2500);
     }
+
+//    private void otosDrive(double targetX, double targetY, double targetHeading, int maxTime) {
+//    }
 }

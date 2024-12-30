@@ -107,23 +107,45 @@ public class Tele extends OpMode {
             robot.backRight.setPower(0);
         }
 
-        int maxArmPosition = 2150;
+        int maxArmPosition = 2350;
+        double intakeArmSpeedLimit = 0.8;
         robot.intakeArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        // Intake slide
-        if (((gamepad2.right_stick_y > 0 && robot.intakeLimitSwitch.getVoltage() < 2) || (gamepad2.right_stick_y < 0 && robot.intakeArm.getCurrentPosition() < maxArmPosition)) && (robot.intakeArm.getCurrentPosition() < maxArmPosition)) {
-            robot.intakeArm.setPower(gamepad2.right_stick_y);
+
+        if (((gamepad2.right_stick_y > 0) || (gamepad2.right_stick_y < 0 && robot.intakeArm.getCurrentPosition() <= maxArmPosition))) {
+            robot.intakeArm.setPower(gamepad2.right_stick_y * intakeArmSpeedLimit);
+        } else if (robot.intakeLimitSwitch.getVoltage() < 2) {
+            robot.intakeArm.setPower(0);
+            robot.intakeArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         } else {
             robot.intakeArm.setPower(0);
         }
-        if (robot.intakeLimitSwitch.getVoltage() > 2) {
-            robot.intakeArm.setPower(0);
-            robot.intakeArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }
+
+//        int maxArmPosition = 2150;
+//        robot.intakeArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        // Intake slide
+//        if (((gamepad2.right_stick_y > 0 && robot.intakeLimitSwitch.getVoltage() < 2) || (gamepad2.right_stick_y < 0 && robot.intakeArm.getCurrentPosition() < maxArmPosition)) && (robot.intakeArm.getCurrentPosition() < maxArmPosition)) {
+//            robot.intakeArm.setPower(gamepad2.right_stick_y);
+//        } else {
+//            robot.intakeArm.setPower(0);
+
+//        }
+//        if (robot.intakeLimitSwitch.getVoltage() > 2) {
+//            robot.intakeArm.setPower(0);
+//            robot.intakeArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        }
 
         // Intake stars
-        robot.stars.setPower(gamepad2.right_trigger);
-        if (gamepad2.right_bumper) {
+//        robot.stars.setPower(gamepad2.right_trigger);
+//        if (gamepad2.right_bumper) {
+//            robot.stars.setPower(-1);
+//        }
+
+        if (gamepad2.right_trigger > 0.5) {
+            robot.stars.setPower(1);
+        } else if (gamepad2.right_bumper) {
             robot.stars.setPower(-1);
+        } else {
+            robot.stars.setPower(0.0);
         }
 
         double downwardsSpeedLimit = 0.25;
@@ -136,21 +158,24 @@ public class Tele extends OpMode {
              robot.deliveryLiftAux.setPower(-gamepad2.left_stick_y);
 
          } else if (gamepad2.left_stick_y > 0 && robot.auxLiftDownLimitSwitch.getVoltage() > 2) {
-             robot.deliveryLiftAux.setPower(-gamepad2.left_stick_y * downwardsSpeedLimit);
-
+             if (gamepad2.a) {
+                 robot.deliveryLiftAux.setPower(-gamepad2.left_stick_y * 0.05);
+             } else {
+                 robot.deliveryLiftAux.setPower(-gamepad2.left_stick_y * downwardsSpeedLimit);
+             }
          } else if (gamepad2.left_stick_y > 0 && robot.mainLiftDownLimitSwitch.getVoltage() > 2) {
-             robot.deliveryLiftMain.setPower(gamepad2.left_stick_y * downwardsSpeedLimit);
-
+             if (gamepad2.a) {
+                 robot.deliveryLiftMain.setPower(gamepad2.left_stick_y * 0.05);
+             } else {
+                 robot.deliveryLiftMain.setPower(gamepad2.left_stick_y * downwardsSpeedLimit);
+             }
          } else {
              robot.deliveryLiftMain.setPower(0);
              robot.deliveryLiftAux.setPower(0);
          }
 
-
-        if (gamepad2.a || (robot.mainLiftDownLimitSwitch.getVoltage() > 2)) {
-            robot.bucket.setPosition(0.4);
-        } else if (robot.deliveryLiftMain.getPower() < 0.1) {
-            robot.bucket.setPosition(0);
+        if (gamepad2.dpad_up || (robot.mainLiftDownLimitSwitch.getVoltage() > 2)) {
+            robot.bucket.setPosition(0.6);
         } else {
             robot.bucket.setPosition(0);
         }
@@ -167,7 +192,7 @@ public class Tele extends OpMode {
         if (gamepad2.left_trigger > 0.5) {
             robot.specimenGripper.setPosition(0.36);
         }
-        if (gamepad2.a) {
+        if (gamepad2.dpad_left) {
             robot.kickstand.setPosition(0.5);
         }
 
@@ -181,6 +206,29 @@ public class Tele extends OpMode {
             robot.specimenGripper.setPosition(robot.specimenGripperUngrip);
         }
 
+        if (gamepad1.dpad_up) {
+            robot.lift.setPower(-0.5);
+        } else if (gamepad1.dpad_down) {
+            robot.lift.setPower(0.5);
+        } else {
+            robot.lift.setPower(0);
+        }
+
+        if (gamepad1.dpad_right) {
+            robot.hookRelease.setPosition(0.5);
+        } else {
+            robot.hookRelease.setPosition(0);
+        }
+
+        telemetry.addData("Hook release position", robot.hookRelease.getPosition());
+//        telemetry.addData("Right trigger value", gamepad2.right_trigger);
+//        telemetry.addData("Right bumper value", gamepad2.right_bumper);
+//        telemetry.addData("Stars power", robot.stars.getPower());
+//        telemetry.addData("Right stick y", gamepad2.right_stick_y);
+//        telemetry.addData("Intake arm position", robot.intakeArm.getCurrentPosition());
+//        telemetry.addData("Intake switch voltage", robot.intakeLimitSwitch.getVoltage());
+//        telemetry.addData("Bucket Position", robot.bucket.getPosition());
+//        telemetry.addData("Main lift down switch voltage", robot.mainLiftDownLimitSwitch.getVoltage());
 //        telemetry.addData("Stick X:", gamepad1.left_stick_x);
 //        telemetry.addData("Stick Y:", gamepad1.left_stick_y);
 //
@@ -191,7 +239,7 @@ public class Tele extends OpMode {
 //        telemetry.addData("Aux lift down Switch", robot.auxLiftDownLimitSwitch.getVoltage());
 
 //        telemetry.addData("OTOS (X value)", robot.odometrySensor.getPosition().x);
-        telemetry.addData("OTOS (Y value)", robot.odometrySensor.getPosition().y * robot.LINEAR_SCALAR);
+//        telemetry.addData("OTOS (Y value)", robot.odometrySensor.getPosition().y * robot.LINEAR_SCALAR);
 //        telemetry.addData("OTOS (H value)", robot.odometrySensor.getPosition().h);
 //        telemetry.addData("OTOS (Velocity X)", robot.odometrySensor.getVelocity().x);
 //        telemetry.addData("OTOS (Velocity Y)", robot.odometrySensor.getVelocity().y);

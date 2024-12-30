@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.hardware.CRServo;
 
 public class Hardware {
 
@@ -21,13 +22,14 @@ public class Hardware {
     public DcMotor deliveryLiftMain = null;
     public DcMotor deliveryLiftAux = null;
     public DcMotor intakeArm = null;
-    public DcMotor stars = null;
+    public DcMotor lift = null;
+    public CRServo stars = null;
     public Servo specimenGripper = null;
     public Servo escapement = null;
     public Servo kickstand = null;
     public Servo bucket = null;
     public Servo wrist = null;
-
+    public Servo hookRelease = null;
     public AnalogInput intakeLimitSwitch = null;
     public AnalogInput mainLiftDownLimitSwitch = null;
     public AnalogInput mainLiftUpLimitSwitch = null;
@@ -60,13 +62,15 @@ public class Hardware {
         deliveryLiftMain = hardwareMap.get(DcMotor.class, "delivery_big");
         deliveryLiftAux = hardwareMap.get(DcMotor.class, "delivery_small");
         intakeArm = hardwareMap.get(DcMotor.class, "intake");
-        stars = hardwareMap.get(DcMotor.class, "stars");
+        lift = hardwareMap.get(DcMotor.class, "lift");
 
+        stars = hardwareMap.get(CRServo.class, "stars");
         specimenGripper = hardwareMap.get(Servo.class, "gripper");
         escapement = hardwareMap.get(Servo.class, "escapement");
         kickstand = hardwareMap.get(Servo.class, "kickstand");
         bucket = hardwareMap.get(Servo.class, "bucket");
         batteryVoltageSensor = hardwareMap.voltageSensor.get("Expansion Hub 2");
+        hookRelease = hardwareMap.get(Servo.class, "hook_release");
 //        wrist = hardwareMap.get(Servo.class, "wrist");
 
         odometrySensor = hardwareMap.get(SparkFunOTOS.class, "OTOS");
@@ -104,6 +108,9 @@ public class Hardware {
         robot.frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        robot.stars.setDirection(CRServo.Direction.FORWARD);
+        robot.stars.setPower(0.0);
 
         robot.odometrySensor.calibrateImu();
         robot.odometrySensor.setAngularScalar(0.997707296347086);
