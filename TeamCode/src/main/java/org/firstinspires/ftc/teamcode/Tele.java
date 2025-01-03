@@ -61,6 +61,7 @@ public class Tele extends OpMode {
     public void start() {
 //        robot.escapement.setPosition(0);
 //        robot.kickstand.setPosition(0);
+//        robot.hookRelease.setPosition(0);
     }
 
     @Override
@@ -215,9 +216,9 @@ public class Tele extends OpMode {
         }
 
         if (gamepad1.dpad_right) {
-            robot.hookRelease.setPosition(0.5);
+            robot.hookRelease.setPosition(0.35);
         } else {
-            robot.hookRelease.setPosition(0);
+            robot.hookRelease.setPosition(.47);
         }
 
         telemetry.addData("Hook release position", robot.hookRelease.getPosition());
