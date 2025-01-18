@@ -4,20 +4,23 @@ import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous(name="ITD_demo2", group="auto")
+@Autonomous(name="NetZone", group="auto")
 //@Disabled
-public class ITD_demo2 extends LinearOpMode {
+public class NetZone extends LinearOpMode {
+
+    Hardware robot = new Hardware();
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.03;   // 0.02 Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  0.15;   // 0.015 Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+    final double SPEED_GAIN  =  0.045;   // 0.02 Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN =  0.058;   // 0.015 Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
     final double TURN_GAIN   =  0.03;   // 0.01 Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.4;   //  Clip the approach speed to this max value (adjust for your robot)
@@ -27,13 +30,8 @@ public class ITD_demo2 extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     // Declare OpMode members for each of the 4 drive motors.
-    private DcMotor leftFrontDrive = null;
-    private DcMotor leftBackDrive = null;
-    private DcMotor rightFrontDrive = null;
-    private DcMotor rightBackDrive = null;
 
-    // Sensors
-    private SparkFunOTOS myOtos;        // Optical tracking odometry sensor
+    // Sensors     // Optical tracking odometry sensor
     SparkFunOTOS.Pose2D pos;
 
     @Override
@@ -41,19 +39,21 @@ public class ITD_demo2 extends LinearOpMode {
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
-        leftFrontDrive  = hardwareMap.get(DcMotor.class, "fl");
-        leftBackDrive  = hardwareMap.get(DcMotor.class, "bl");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "fr");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "br");
 
-        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+//        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+//        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
+//        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+//        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
         // Get a reference to the sensor
-        myOtos = hardwareMap.get(SparkFunOTOS.class, "SparkFun");
+
         // All the configuration for the OTOS is done in this helper method, check it out!
+
+        robot.init(hardwareMap);
+        Hardware.initializeDriveMotors(robot);
+
+        robot.backRight.setDirection(DcMotorSimple.Direction.FORWARD);
+
         configureOtos();
         sleep(1000);
 
@@ -63,18 +63,35 @@ public class ITD_demo2 extends LinearOpMode {
             telemetry.addData("Status", "Initialized");
             telemetry.update();
         }
+
+        double voltage = robot.voltageSensor.getVoltage();
+
         waitForStart();
         runtime.reset();
 
         telemetry.addData("Status", "Running");
         telemetry.update();
 
-        otosDrive(2, 2, 0, 2);      // small moveforward and right away from wall
-        otosDrive(18, 2, 0, 2);     // forward and push sample into net zone
+        telemetry.addData("Voltage", voltage);
 
-        otosDrive(0, 24, 0, 2);     // backup and move away from wall
-        otosDrive(-87, 24, 0, 4);   // backup straight
-        otosDrive(-87, 4, 0, 2);    // park in observation zone
+        otosDrive(-35, 40, 31);
+        sleep(500);
+//        otosDrive(-32, 0, 31);
+//        sleep(500);
+        otosDrive(-30,75,31);
+        sleep(500);
+        turn(180, 31);
+        sleep(500);
+//        otosDrive(26,7,31);
+//        sleep(500);
+        turn(0, 31);
+        sleep(500);
+        otosDrive(-35,40,31);
+        sleep(500);
+//        otosDrive(568,36,31);
+//        sleep(500);
+        otosDrive(-30,75, 31);
+        sleep(500);
 
         sleep(1000);
     }
@@ -89,9 +106,9 @@ public class ITD_demo2 extends LinearOpMode {
         // stored in the sensor, it's part of the library, so you need to set at the
         // start of all your programs.
         // myOtos.setLinearUnit(DistanceUnit.METER);
-        myOtos.setLinearUnit(DistanceUnit.INCH);
+        robot.odometrySensor.setLinearUnit(DistanceUnit.INCH);
         // myOtos.setAngularUnit(AnguleUnit.RADIANS);
-        myOtos.setAngularUnit(AngleUnit.DEGREES);
+        robot.odometrySensor.setAngularUnit(AngleUnit.DEGREES);
 
         // Assuming you've mounted your sensor to a robot and it's not centered,
         // you can specify the offset for the sensor relative to the center of the
@@ -105,7 +122,7 @@ public class ITD_demo2 extends LinearOpMode {
         // would be {-5, 10, -90}. These can be any value, even the angle can be
         // tweaked slightly to compensate for imperfect mounting (eg. 1.3 degrees).
         SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(-3.75, -7.5, 90); // should be -3.75 & -7.5 and 90
-        myOtos.setOffset(offset);
+        robot.odometrySensor.setOffset(offset);
 
         // Here we can set the linear and angular scalars, which can compensate for
         // scaling issues with the sensor measurements. Note that as of firmware
@@ -123,8 +140,8 @@ public class ITD_demo2 extends LinearOpMode {
         // multiple speeds to get an average, then set the linear scalar to the
         // inverse of the error. For example, if you move the robot 100 inches and
         // the sensor reports 103 inches, set the linear scalar to 100/103 = 0.971
-        myOtos.setLinearScalar(1.008);
-        myOtos.setAngularScalar(0.992);
+        robot.odometrySensor.setLinearScalar(1);
+        robot.odometrySensor.setAngularScalar(0.992);
 
         // The IMU on the OTOS includes a gyroscope and accelerometer, which could
         // have an offset. Note that as of firmware version 1.0, the calibration
@@ -136,23 +153,23 @@ public class ITD_demo2 extends LinearOpMode {
         // to wait until the calibration is complete. If no parameters are provided,
         // it will take 255 samples and wait until done; each sample takes about
         // 2.4ms, so about 612ms total
-        myOtos.calibrateImu();
+        robot.odometrySensor.calibrateImu();
 
         // Reset the tracking algorithm - this resets the position to the origin,
         // but can also be used to recover from some rare tracking errors
-        myOtos.resetTracking();
+        robot.odometrySensor.resetTracking();
 
         // After resetting the tracking, the OTOS will report that the robot is at
         // the origin. If your robot does not start at the origin, or you have
         // another source of location information (eg. vision odometry), you can set
         // the OTOS location to match and it will continue to track from there.
         SparkFunOTOS.Pose2D currentPosition = new SparkFunOTOS.Pose2D(0, 0, 0);
-        myOtos.setPosition(currentPosition);
+        robot.odometrySensor.setPosition(currentPosition);
 
         // Get the hardware and firmware version
         SparkFunOTOS.Version hwVersion = new SparkFunOTOS.Version();
         SparkFunOTOS.Version fwVersion = new SparkFunOTOS.Version();
-        myOtos.getVersionInfo(hwVersion, fwVersion);
+        robot.odometrySensor.getVersionInfo(hwVersion, fwVersion);
 
         telemetry.addLine("OTOS configured! Press start to get position data!");
         telemetry.addLine();
@@ -165,15 +182,15 @@ public class ITD_demo2 extends LinearOpMode {
      * Move robot to a designated X,Y position and heading
      * set the maxTime to have the driving logic timeout after a number of seconds.
      */
-    void otosDrive(double targetX, double targetY, double targetHeading, int maxTime) {
+    void otosDrive(double targetX, double targetY, int maxTime) {
         double drive, strafe, turn;
         double currentRange, targetRange, initialBearing, targetBearing, xError, yError, yawError;
         double opp, adj;
 
         SparkFunOTOS.Pose2D currentPos = myPosition();
-        xError = targetX-currentPos.x;
-        yError = targetY-currentPos.y;
-        yawError = targetHeading-currentPos.h;
+        xError = targetX-(currentPos.x);
+        yError = targetY-(currentPos.y);
+        yawError = 0-currentPos.h;
 
         runtime.reset();
 
@@ -191,10 +208,11 @@ public class ITD_demo2 extends LinearOpMode {
             telemetry.addData("current Heading angle", currentPos.h);
             telemetry.addData("target X coordinate", targetX);
             telemetry.addData("target Y coordinate", targetY);
-            telemetry.addData("target Heading angle", targetHeading);
+            telemetry.addData("target Heading angle", 0);
             telemetry.addData("xError", xError);
             telemetry.addData("yError", yError);
             telemetry.addData("yawError", yawError);
+            telemetry.addData("voltage", robot.voltageSensor.getVoltage());
             telemetry.update();
 
             // Apply desired axes motions to the drivetrain.
@@ -202,13 +220,13 @@ public class ITD_demo2 extends LinearOpMode {
 
             // then recalc error
             currentPos = myPosition();
-            xError = targetX-currentPos.x;
-            yError = targetY-currentPos.y;
-            yawError = targetHeading-currentPos.h;
+            xError = targetX-(currentPos.x);
+            yError = targetY-(currentPos.y);
+            yawError = 0-currentPos.h;
         }
         moveRobot(0,0,0);
         currentPos = myPosition();
-        telemetry.addData("current X coordinate", currentPos.x);
+        telemetry.addData("current X coordinate", currentPos.x );
         telemetry.addData("current Y coordinate", currentPos.y);
         telemetry.addData("current Heading angle", currentPos.h);
         telemetry.update();
@@ -218,8 +236,8 @@ public class ITD_demo2 extends LinearOpMode {
         by swapping x and y and changing the sign of the heading
         */
     SparkFunOTOS.Pose2D myPosition() {
-        pos = myOtos.getPosition();
-        SparkFunOTOS.Pose2D myPos = new SparkFunOTOS.Pose2D(pos.y, pos.x, -pos.h);
+        pos = robot.odometrySensor.getPosition();
+        SparkFunOTOS.Pose2D myPos = new SparkFunOTOS.Pose2D(pos.x * robot.sensorMultipler, pos.y * robot.sensorMultipler, -pos.h);
         return(myPos);
     }
     /**
@@ -231,10 +249,10 @@ public class ITD_demo2 extends LinearOpMode {
     void moveRobot(double x, double y, double yaw) {
 
         // Calculate wheel powers.
-        double leftFrontPower    =  x +y +yaw;
-        double rightFrontPower   =  x -y -yaw;
-        double leftBackPower     =  x -y +yaw;
-        double rightBackPower    =  x +y -yaw;
+        double leftFrontPower    =  x -y +yaw;
+        double rightFrontPower   =  x +y -yaw;
+        double leftBackPower     =  x +y +yaw;
+        double rightBackPower    =  x -y -yaw;
 
         // Normalize wheel powers to be less than 1.0
         double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
@@ -249,10 +267,44 @@ public class ITD_demo2 extends LinearOpMode {
         }
 
         // Send powers to the wheels.
-        leftFrontDrive.setPower(leftFrontPower);
-        rightFrontDrive.setPower(rightFrontPower);
-        leftBackDrive.setPower(leftBackPower);
-        rightBackDrive.setPower(rightBackPower);
+        robot.frontLeft.setPower(leftFrontPower);
+        robot.frontRight.setPower(rightFrontPower);
+        robot.backLeft.setPower(leftBackPower);
+        robot.backRight.setPower(rightBackPower);
         sleep(10);
+    }
+
+    void turn(double degrees, double maxTime) {
+        double  turn;
+        double  yawError;
+
+        SparkFunOTOS.Pose2D currentPos = myPosition();
+        yawError = degrees-currentPos.h;
+
+        runtime.reset();
+
+        while(opModeIsActive() && (runtime.milliseconds() < maxTime*1000) && ((Math.abs(yawError) > 4))) {
+            // Use the speed and turn "gains" to calculate how we want the robot to move.
+
+            turn   = Range.clip(yawError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+
+            telemetry.addData("Auto"," Turn %5.2f ", turn);
+            // current x,y swapped due to 90 degree rotation
+            telemetry.addData("current Heading angle", currentPos.h);
+            telemetry.addData("target Heading angle", degrees);
+            telemetry.addData("yawError", yawError);
+            telemetry.update();
+
+            // Apply desired axes motions to the drivetrain.
+            moveRobot(0,0,turn);
+
+            // then recalc error
+            currentPos = myPosition();
+            yawError = degrees-currentPos.h;
+        }
+        moveRobot(0,0,0);
+        currentPos = myPosition();
+        telemetry.addData("current Heading angle", currentPos.h);
+        telemetry.update();
     }
 }

@@ -1,16 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.roadrunner.drive.MecanumDrive;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.I2cDevice;
-import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Hardware {
 
@@ -19,16 +17,18 @@ public class Hardware {
     public DcMotor backLeft = null;
     public DcMotor backRight = null;
 
+    public VoltageSensor voltageSensor;
+
     public DcMotor deliveryLiftMain = null;
     public DcMotor deliveryLiftAux = null;
     public DcMotor intakeArm = null;
     public DcMotor lift = null;
-    public CRServo stars = null;
+    public Servo stars = null;
     public Servo specimenGripper = null;
     public Servo escapement = null;
     public Servo kickstand = null;
     public Servo bucket = null;
-    public Servo wrist = null;
+//    public Servo wrist = null;
     public Servo hookRelease = null;
     public AnalogInput intakeLimitSwitch = null;
     public AnalogInput mainLiftDownLimitSwitch = null;
@@ -38,9 +38,8 @@ public class Hardware {
     public SparkFunOTOS odometrySensor;
 
     public OTOSMecanumDrive drive;
-    public VoltageSensor batteryVoltageSensor;
 
-    HardwareMap hardwareMap = null;
+    static HardwareMap hardwareMap = null;
 
     public Hardware() {
 
@@ -50,7 +49,17 @@ public class Hardware {
     public double escapementClosed = 0;
     public double kickstandDown = 0;
     public double specimenGripperUngrip = 0;
-    public double LINEAR_SCALAR = 1.226235304336275;
+    public double sensorMultipler = 1.72;
+    public double angularScalar = 1;
+    final double SPEED_GAIN  =  0.03;
+    final double STRAFE_GAIN =  0.15;
+    final double TURN_GAIN   =  0.03;
+
+    final double MAX_AUTO_SPEED = 0.4;
+    final double MAX_AUTO_STRAFE= 0.4;
+    final double MAX_AUTO_TURN  = 0.4;
+    private ElapsedTime runtime = new ElapsedTime();
+
 
     public void init(HardwareMap hardwareMap) {
 
@@ -64,18 +73,18 @@ public class Hardware {
         intakeArm = hardwareMap.get(DcMotor.class, "intake");
         lift = hardwareMap.get(DcMotor.class, "lift");
 
-        stars = hardwareMap.get(CRServo.class, "stars");
+        stars = hardwareMap.get(Servo.class, "stars");
         specimenGripper = hardwareMap.get(Servo.class, "gripper");
         escapement = hardwareMap.get(Servo.class, "escapement");
         kickstand = hardwareMap.get(Servo.class, "kickstand");
         bucket = hardwareMap.get(Servo.class, "bucket");
-        batteryVoltageSensor = hardwareMap.voltageSensor.get("Expansion Hub 2");
         hookRelease = hardwareMap.get(Servo.class, "hook_release");
 //        wrist = hardwareMap.get(Servo.class, "wrist");
 
+        voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
         odometrySensor = hardwareMap.get(SparkFunOTOS.class, "OTOS");
 
-        drive = new OTOSMecanumDrive(frontLeft, frontRight, backLeft, backRight, odometrySensor, batteryVoltageSensor);
+//        drive = new OTOSMecanumDrive(frontLeft, frontRight, backLeft, backRight, odometrySensor, batteryVoltageSensor);
 
         mainLiftDownLimitSwitch = hardwareMap.get(AnalogInput.class, "main_lift_down");
         mainLiftUpLimitSwitch = hardwareMap.get(AnalogInput.class, "main_lift_up");
@@ -109,12 +118,11 @@ public class Hardware {
         robot.backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        robot.stars.setDirection(CRServo.Direction.FORWARD);
-        robot.stars.setPower(0.0);
+        robot.stars.setDirection(Servo.Direction.FORWARD);
 
         robot.odometrySensor.calibrateImu();
         robot.odometrySensor.setAngularScalar(0.997707296347086);
-        robot.odometrySensor.setLinearScalar(1.0);
+        robot.odometrySensor.setLinearScalar(1);
         robot.odometrySensor.setOffset(new SparkFunOTOS.Pose2D(2.25,7.75,0));
         robot.odometrySensor.resetTracking();
 

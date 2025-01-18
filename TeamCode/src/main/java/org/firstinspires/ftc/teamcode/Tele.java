@@ -60,8 +60,9 @@ public class Tele extends OpMode {
 
     public void start() {
 //        robot.escapement.setPosition(0);
-//        robot.kickstand.setPosition(0);
+        robot.kickstand.setPosition(0);
 //        robot.hookRelease.setPosition(0);
+//        robot.bucket.setPosition(0);
     }
 
     @Override
@@ -135,18 +136,25 @@ public class Tele extends OpMode {
 //            robot.intakeArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        }
 
+        double StarSpeed = 1;
         // Intake stars
 //        robot.stars.setPower(gamepad2.right_trigger);
 //        if (gamepad2.right_bumper) {
 //            robot.stars.setPower(-1);
 //        }
 
-        if (gamepad2.right_trigger > 0.5) {
-            robot.stars.setPower(1);
-        } else if (gamepad2.right_bumper) {
-            robot.stars.setPower(-1);
+//        if (gamepad2.right_trigger < 0.5) {
+//            robot.stars.setPower(0);
+//        }
+
+        // Value 1 --> Represents 0 power
+        // Value (-) 0.5 --> Represents forward/backward movement
+        if (gamepad2.right_bumper) {
+            robot.stars.setPosition(-0.5);
+        } else if (gamepad2.right_trigger < 0.5) {
+            robot.stars.setPosition(0.5);
         } else {
-            robot.stars.setPower(0.0);
+            robot.stars.setPosition(1);
         }
 
         double downwardsSpeedLimit = 0.25;
@@ -183,6 +191,12 @@ public class Tele extends OpMode {
 
         if (gamepad2.y) {
             robot.escapement.setPosition(0.5);
+        } else if (robot.intakeLimitSwitch.getVoltage() < 2 && robot.mainLiftDownLimitSwitch.getVoltage() < 2) {
+           if (gamepad2.y) {
+               robot.escapement.setPosition(0.1);
+           } else {
+               robot.escapement.setPosition(0.5);
+           }
         } else {
             robot.escapement.setPosition(0);
         }
@@ -218,13 +232,14 @@ public class Tele extends OpMode {
         if (gamepad1.dpad_right) {
             robot.hookRelease.setPosition(0.35);
         } else {
-            robot.hookRelease.setPosition(.47);
+            robot.hookRelease.setPosition(.49);
         }
 
-        telemetry.addData("Hook release position", robot.hookRelease.getPosition());
+//        telemetry.addData("Hook release position", robot.hookRelease.getPosition());
 //        telemetry.addData("Right trigger value", gamepad2.right_trigger);
 //        telemetry.addData("Right bumper value", gamepad2.right_bumper);
-//        telemetry.addData("Stars power", robot.stars.getPower());
+//        telemetry.addData("Stars power", robot.stars.getPosition());
+//        telemetry.addData("Stars Direction", robot.stars.getDirection());
 //        telemetry.addData("Right stick y", gamepad2.right_stick_y);
 //        telemetry.addData("Intake arm position", robot.intakeArm.getCurrentPosition());
 //        telemetry.addData("Intake switch voltage", robot.intakeLimitSwitch.getVoltage());
@@ -233,15 +248,15 @@ public class Tele extends OpMode {
 //        telemetry.addData("Stick X:", gamepad1.left_stick_x);
 //        telemetry.addData("Stick Y:", gamepad1.left_stick_y);
 //
-//        telemetry.addData("Intake Switch", robot.intakeLimitSwitch.getVoltage());
-//        telemetry.addData("Main lift up Switch", robot.mainLiftUpLimitSwitch.getVoltage());
-//        telemetry.addData("Main lift down Switch", robot.mainLiftDownLimitSwitch.getVoltage());
+        telemetry.addData("Intake Switch", robot.intakeLimitSwitch.getVoltage());
+        telemetry.addData("Main lift up Switch", robot.mainLiftUpLimitSwitch.getVoltage());
+        telemetry.addData("Main lift down Switch", robot.mainLiftDownLimitSwitch.getVoltage());
 //        telemetry.addData("Aux lift up Switch", robot.auxLiftUpLimitSwitch.getVoltage());
 //        telemetry.addData("Aux lift down Switch", robot.auxLiftDownLimitSwitch.getVoltage());
 
-//        telemetry.addData("OTOS (X value)", robot.odometrySensor.getPosition().x);
-//        telemetry.addData("OTOS (Y value)", robot.odometrySensor.getPosition().y * robot.LINEAR_SCALAR);
-//        telemetry.addData("OTOS (H value)", robot.odometrySensor.getPosition().h);
+        telemetry.addData("OTOS (X value)", robot.odometrySensor.getPosition().x);
+        telemetry.addData("OTOS (Y value)", robot.odometrySensor.getPosition().y);
+        telemetry.addData("OTOS (H value)", robot.odometrySensor.getPosition().h);
 //        telemetry.addData("OTOS (Velocity X)", robot.odometrySensor.getVelocity().x);
 //        telemetry.addData("OTOS (Velocity Y)", robot.odometrySensor.getVelocity().y);
 //        telemetry.addData("OTOS (Acceleration X)", robot.odometrySensor.getAcceleration().x);

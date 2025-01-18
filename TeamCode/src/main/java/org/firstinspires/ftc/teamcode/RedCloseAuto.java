@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
@@ -28,31 +29,34 @@ public class RedCloseAuto extends LinearOpMode {
         robot.init(hardwareMap);
 
         Hardware.initializeDriveMotors(robot);
+
+        robot.backRight.setDirection(DcMotorSimple.Direction.FORWARD);
+
 //        drive = new SparkfunOdometryLocalizer(OTOS);
 //        drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
-        if (!OTOS.isConnected()) {
-            telemetry.addData("OTOS", "Not Connected");
-            telemetry.update();
-        }
-
-        OTOS.begin();
-        telemetry.addData("Calibrating IMU:", "Calibrating (1/2)");
-        telemetry.update();
-
-        OTOS.calibrateImu(100, true);
-        telemetry.addData("Calibrating IMU:", "Calibrating (2/2)");
-        telemetry.update();
-
-        OTOS.setLinearScalar(1.0);
-        OTOS.setAngularScalar(1.0);
-
-        OTOS.resetTracking();
-
-        telemetry.addData("OTOS", "Ready");
-        telemetry.update();
+//        if (!OTOS.isConnected()) {
+//            telemetry.addData("OTOS", "Not Connected");
+//            telemetry.update();
+//        }
+//
+//        OTOS.begin();
+//        telemetry.addData("Calibrating IMU:", "Calibrating (1/2)");
+//        telemetry.update();
+//
+//        OTOS.calibrateImu(100, true);
+//        telemetry.addData("Calibrating IMU:", "Calibrating (2/2)");
+//        telemetry.update();
+//
+//        OTOS.setLinearScalar(1.0);
+//        OTOS.setAngularScalar(1.0);
+//
+//        OTOS.resetTracking();
+//
+//        telemetry.addData("OTOS", "Ready");
+//        telemetry.update();
 
         Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));
 //        drive.setPoseEstimate(startPose);
@@ -62,9 +66,9 @@ public class RedCloseAuto extends LinearOpMode {
         if (isStopRequested()) return;
         sleep(500);
 
-        robot.escapement.setPosition(0);
-        robot.kickstand.setPosition(0);
-        robot.deliveryLiftMain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        robot.escapement.setPosition(0);
+//        robot.kickstand.setPosition(0);
+//        robot.deliveryLiftMain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 //        otosDrive(2, 7, 8, 2);
 //
@@ -77,11 +81,11 @@ public class RedCloseAuto extends LinearOpMode {
         // Auto Program Starts:
 
 //        // Moves 24 inches exactly:
-//        robot.frontLeft.setPower(-0.25);
-//        robot.backLeft.setPower(-0.25);
-//        robot.frontRight.setPower(-0.25);
-//        robot.backRight.setPower(-0.25);
-//        sleep(1650);
+        robot.frontLeft.setPower(-0.5);
+        robot.backLeft.setPower(-0.5);
+        robot.frontRight.setPower(-0.5);
+        robot.backRight.setPower(-0.5);
+        sleep(2000);
 //
 //        // Turns 90 degrees to the right
 //        robot.frontLeft.setPower(0.25);
