@@ -19,6 +19,9 @@ class Tele : OpMode() {
             y = -gamepad1.left_stick_y.toDouble(),
             yaw = -gamepad1.right_stick_x.toDouble()
         )
+
+
+
     }
 
 }

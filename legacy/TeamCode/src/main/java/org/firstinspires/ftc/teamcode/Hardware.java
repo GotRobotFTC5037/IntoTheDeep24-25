@@ -19,6 +19,7 @@ public class Hardware {
     public DcMotor deliveryLiftAux = null;
     public DcMotor intakeArm = null;
     public DcMotor lift = null;
+
     public Servo stars = null;
     public Servo specimenGripper = null;
     public Servo escapement = null;
