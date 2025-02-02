@@ -1,47 +1,80 @@
 package org.firstinspires.ftc.teamcode
 
+import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.ftc.LazyImu
+import com.acmerobotics.roadrunner.ftc.OverflowEncoder
 import com.qualcomm.robotcore.hardware.AnalogInput
+import com.qualcomm.robotcore.hardware.ColorRangeSensor
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
+import com.qualcomm.robotcore.hardware.DistanceSensor
 import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.IMU
 import com.qualcomm.robotcore.hardware.Servo
+import com.qualcomm.robotcore.hardware.VoltageSensor
 import kotlin.math.abs
 import kotlin.math.max
+
 
 class Robot(val hardwareMap: HardwareMap) {
 
     // Drive Motors
-    private val frontLeft: DcMotor = hardwareMap.get(DcMotor::class.java, "fl")
-    private val backLeft: DcMotor = hardwareMap.get(DcMotor::class.java, "bl")
-    private val frontRight: DcMotor = hardwareMap.get(DcMotor::class.java, "fr")
-    private val backRight: DcMotor = hardwareMap.get(DcMotor::class.java, "br")
+    private val frontLeft: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "fl")
+    private val backLeft: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "bl")
+    private val frontRight: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "fr")
+    private val backRight: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "br")
 
     // Other Motors
-    private val delivery1: DcMotor = hardwareMap.get(DcMotor::class.java, "delivery1")
-    private val delivery2: DcMotor = hardwareMap.get(DcMotor::class.java, "delivery2")
-    private val winch1: DcMotor = hardwareMap.get(DcMotor::class.java, "winch1")
-    private val winch2: DcMotor = hardwareMap.get(DcMotor::class.java, "winch2")
+    public val deliveryFront: DcMotor = hardwareMap.get(DcMotor::class.java, "delivery_front")
+    public val deliveryBack: DcMotor = hardwareMap.get(DcMotor::class.java, "delivery_back")
+//    private val winch1: DcMotor = hardwareMap.get(DcMotor::class.java, "winch1")
+//    private val winch2: DcMotor = hardwareMap.get(DcMotor::class.java, "winch2")
 
     // Servos
-    private val intakeSlide: Servo = hardwareMap.get(Servo::class.java, "intake_slide")
-    private val intakePivot: Servo = hardwareMap.get(Servo::class.java, "intake_pivot")
-    private val intakeWrist: Servo = hardwareMap.get(Servo::class.java, "intake_wrist")
-    private val intakeFingers: Servo = hardwareMap.get(Servo::class.java, "intake_fingers")
-    private val deliveryPivot: Servo = hardwareMap.get(Servo::class.java, "delivery_pivot")
-    private val deliveryFingers: Servo = hardwareMap.get(Servo::class.java, "delivery_fingers")
-    private val specimenFingers: Servo = hardwareMap.get(Servo::class.java, "specimen_fingers")
-    private val winchServo: Servo = hardwareMap.get(Servo::class.java, "winch_servo")
+    public val intakeSlide: Servo = hardwareMap.get(Servo::class.java, "intake_slide")
+    public val intakePivot: Servo = hardwareMap.get(Servo::class.java, "intake_pivot")
+    public val intakeWrist: Servo = hardwareMap.get(Servo::class.java, "intake_wrist")
+    public val intakeGripper: Servo = hardwareMap.get(Servo::class.java, "intake_gripper")
+    public val deliveryPivot: Servo = hardwareMap.get(Servo::class.java, "delivery_pivot")
+    public val deliveryGripper: Servo = hardwareMap.get(Servo::class.java, "delivery_gripper")
+    public val specimenGripper: Servo = hardwareMap.get(Servo::class.java, "specimen_gripper")
+//    public val winchServo: Servo = hardwareMap.get(Servo::class.java, "winch_servo")
 
     // Limit Switches
-    private val intakeSwitch: AnalogInput = hardwareMap.get(AnalogInput::class.java, "intake_switch")
-    private val mainLiftDownSwitch: AnalogInput = hardwareMap.get(AnalogInput::class.java, "main_lift_down")
-    private val mainLiftUpSwitch: AnalogInput = hardwareMap.get(AnalogInput::class.java, "main_lift_up")
-    private val auxLiftUpSwitch: AnalogInput = hardwareMap.get(AnalogInput::class.java, "aux_lift_up")
-    private val auxLiftDownSwitch: AnalogInput = hardwareMap.get(AnalogInput::class.java, "aux_lift_down")
+    public val deliveryLiftDownSwitch: AnalogInput = hardwareMap.get(AnalogInput::class.java, "delivery_lift_down")
 
+    // Sensors
+    public val specimenDistanceSensor: DistanceSensor = hardwareMap.get(DistanceSensor::class.java,"specimen_sensor")
+    public val transferDistanceSensor: ColorRangeSensor = hardwareMap.get(ColorRangeSensor::class.java, "transfer_sensor")
+
+    // Servo Positions
+    public val deliveryGripperOpen = 0.2
+    public val deliveryGripperClosed = 0.0
+    public val deliveryPivotLow = 0.255
+    public val deliveryPivotMedium = 0.6
+    public val deliveryPivotHigh = 0.95
+
+    public val specimenGripperOpen = 0.95
+    public val specimenGripperClosed = 0.4
+
+    public val intakeGripperNeutral = 0.26
+    public val intakeGripperClosedSides = 0.7
+    public val intakeGripperClosedTop = 0.0
+    public val intakeGripperClosedLoose = 0.67
+
+
+    // Roadrunner
+//    val roadrunnerMecanumDrive: MecanumDrive
+//    private val voltageSensor: VoltageSensor = hardwareMap.get(VoltageSensor::class.java,"Control Hub")
+//    private val imu: IMU = hardwareMap.get(IMU::class.java,"imu")
+//    private val par0: OverflowEncoder = hardwareMap.get(OverflowEncoder::class.java, "par0")
+//    private val par1: OverflowEncoder = hardwareMap.get(OverflowEncoder::class.java, "par1")
+//    private val perp: OverflowEncoder = hardwareMap.get(OverflowEncoder::class.java, "perp")
+//    private val pose: Pose2d = hardwareMap.get(Pose2d::class.java, "pose")
 
     init {
-        frontLeft.direction = DcMotorSimple.Direction.FORWARD
+        frontLeft.direction = DcMotorSimple.Direction.REVERSE
         backLeft.direction = DcMotorSimple.Direction.FORWARD
         frontRight.direction = DcMotorSimple.Direction.REVERSE
         backRight.direction = DcMotorSimple.Direction.REVERSE
@@ -51,8 +84,10 @@ class Robot(val hardwareMap: HardwareMap) {
         backLeft.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         backRight.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
-        delivery1.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        delivery2.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        deliveryFront.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        deliveryBack.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+
+//        roadrunnerMecanumDrive = MecanumDrive(frontLeft,backLeft,backRight,frontRight,imu,voltageSensor,par1,par0,perp,pose)
 
 //        stars.direction = Servo.Direction.FORWARD
     }
