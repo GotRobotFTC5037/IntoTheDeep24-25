@@ -51,7 +51,7 @@ class Robot(val hardwareMap: HardwareMap) {
     // Servo Positions
     public val deliveryGripperOpen = 0.2
     public val deliveryGripperClosed = 0.0
-    public val deliveryPivotLow = 0.255
+    public val deliveryPivotLow = 0.28
     public val deliveryPivotMedium = 0.6
     public val deliveryPivotHigh = 0.95
 
@@ -62,6 +62,18 @@ class Robot(val hardwareMap: HardwareMap) {
     public val intakeGripperClosedSides = 0.7
     public val intakeGripperClosedTop = 0.0
     public val intakeGripperClosedLoose = 0.67
+
+    public val intakePivotDown = .67
+    public val intakePivotUp = 0.0
+
+    public val intakeSlideMax = 0.0
+    public val intakeSlideMin = .54
+
+    public val intakeWristMid = 0.475
+    public val intakeWristLeft = 0.8
+    public val intakeWristRight = 0.15
+
+
 
 
     // Roadrunner
@@ -78,6 +90,9 @@ class Robot(val hardwareMap: HardwareMap) {
         backLeft.direction = DcMotorSimple.Direction.FORWARD
         frontRight.direction = DcMotorSimple.Direction.REVERSE
         backRight.direction = DcMotorSimple.Direction.REVERSE
+
+        deliveryBack.direction = DcMotorSimple.Direction.REVERSE
+        deliveryFront.direction = DcMotorSimple.Direction.REVERSE
 
         frontLeft.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         frontRight.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE

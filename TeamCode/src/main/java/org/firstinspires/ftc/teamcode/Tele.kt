@@ -4,16 +4,17 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
+import kotlin.math.abs
 
 @TeleOp(name = "Tele", group="Robot")
 class Tele : OpMode() {
 
     private lateinit var robot: Robot
 
-    private var deliveryGripperTime: Double = 0.0
-    private var deliveryGripperPosition: Double = 0.0
-    private var gripperState: Int = 0
-    private var wristAngle = 0.39
+    private var dpadRightPressed: Boolean = false
+    private var aPressed: Boolean = false
+    private var wristAngle = 0.475
+    private var slidesAngle = 0.54
 
 
     override fun init() {
@@ -29,7 +30,8 @@ class Tele : OpMode() {
             yaw = -gamepad1.right_stick_x.toDouble()
         )
 
-        // Intake Gripper Movement
+        //Intake Movement
+        //Gripper
         if (gamepad2.b) {
             robot.intakeGripper.position = robot.intakeGripperClosedLoose
         }
@@ -40,22 +42,63 @@ class Tele : OpMode() {
             robot.intakeGripper.position = robot.intakeGripperClosedTop
         }
 
-        if (gamepad2.right_trigger > 0.1) {
-            if (wristAngle >= 0.8) {
-                wristAngle = 0.8
+        //Wrist
+        if (gamepad2.left_trigger > 0.01) {
+            if (wristAngle >= robot.intakeWristLeft) {
+                wristAngle = robot.intakeWristLeft
             } else {
-                wristAngle = wristAngle + (.005 * gamepad2.right_trigger)
+                wristAngle += (.003 * gamepad2.left_trigger)
             }
-        } else if (gamepad2.left_trigger > 0.1) {
-            if (wristAngle <= 0.15) {
-                wristAngle = 0.2
+        } else if (gamepad2.right_trigger > 0.01) {
+            if (wristAngle <= robot.intakeWristRight) {
+                wristAngle = robot.intakeWristRight
             } else {
-                wristAngle = wristAngle - (.005 * gamepad2.left_trigger)
+                wristAngle -= (.003 * gamepad2.right_trigger)
             }
         }
 
-        robot.intakeWrist.setPosition(wristAngle);
+        robot.intakeWrist.setPosition(wristAngle)
 
+        //Pivot
+        if (!aPressed) {
+            if (gamepad2.a) {
+                if (robot.intakePivot.position == robot.intakePivotUp) {
+                    robot.intakePivot.position = robot.intakePivotDown
+                } else {
+                    robot.intakePivot.position = robot.intakePivotUp
+                }
+            }
+        }
+
+        if (gamepad2.a) {
+            aPressed = true
+        } else {
+            aPressed = false
+        }
+
+//        if (robot.intakePivot.position == robot.intakePivotUp) {
+//            if (robot.intakeGripper.position == robot.intakeGripperClosedTop) {
+//                robot.intakeWrist.position = robot.intakeWristLeft
+//            } else {
+//                robot.intakeWrist.position = robot.intakeWristMid
+//            }
+//        }
+
+        //Slides
+        if (gamepad2.left_stick_y > 0.01) {
+            if (slidesAngle >= robot.intakeSlideMin) {
+                slidesAngle = robot.intakeSlideMin
+            } else {
+                slidesAngle += (.002 * gamepad2.left_stick_y)
+            }
+        } else if (gamepad2.left_stick_y < -0.01) {
+            if (slidesAngle <= robot.intakeSlideMax) {
+                slidesAngle = robot.intakeSlideMax
+            } else {
+                slidesAngle -= (.002 * abs(gamepad2.left_stick_y))
+            }
+        }
+        robot.intakeSlide.position = slidesAngle
 
         // Specimen Gripper Movement
         if (gamepad2.right_bumper) {
@@ -75,30 +118,38 @@ class Tele : OpMode() {
             robot.deliveryPivot.position = robot.deliveryPivotHigh
         }
 
-        when(gripperState) {
-            0 -> if (gamepad2.dpad_right) {
-                gripperState = 1
+        if (!dpadRightPressed) {
+            if (gamepad2.dpad_right) {
+                if (robot.deliveryGripper.position == robot.deliveryGripperOpen) {
+                    robot.deliveryGripper.position = robot.deliveryGripperClosed
+                } else {
+                    robot.deliveryGripper.position = robot.deliveryGripperOpen
+                }
             }
-
-            1 -> if (!gamepad2.dpad_right) {
-                gripperState = 2
-            }
-
-            2 -> if (robot.deliveryGripper.position == robot.deliveryGripperOpen) {
-                robot.deliveryGripper.position = robot.deliveryGripperClosed
-            } else {
-                robot.deliveryGripper.position = robot.deliveryGripperOpen
-            }
-
         }
 
-        if (gripperState == 2) {
-            gripperState = 0
+        if (gamepad2.dpad_right) {
+            dpadRightPressed = true
+        } else {
+            dpadRightPressed = false
         }
+
+        //Delivery Slides needs encoder
+        if (gamepad2.right_stick_y > 0.1 && robot.deliveryLiftDownSwitch.voltage < 2 ) {
+            robot.deliveryFront.power = gamepad2.right_stick_y.toDouble()
+            robot.deliveryBack.power = gamepad2.right_stick_y.toDouble()
+        } else if (gamepad2.right_stick_y < 0.1 ) {
+            robot.deliveryFront.power = gamepad2.right_stick_y.toDouble()
+            robot.deliveryBack.power = gamepad2.right_stick_y.toDouble()
+        } else {
+            robot.deliveryFront.power = 0.0
+            robot.deliveryBack.power = 0.0
+        }
+
 
         // Distance Sensors
-        telemetry.addData("gripper state", gripperState)
         telemetry.addData("gamepad2 dpad_right", gamepad2.dpad_right)
+        telemetry.addData("votage", robot.deliveryLiftDownSwitch.voltage)
 //        telemetry.addData("Transfer color sensor", robot.transferDistanceSensor.red())
         telemetry.update()
     }
