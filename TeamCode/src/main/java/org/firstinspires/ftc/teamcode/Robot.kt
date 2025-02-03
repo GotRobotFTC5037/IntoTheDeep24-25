@@ -51,19 +51,19 @@ class Robot(val hardwareMap: HardwareMap) {
     // Servo Positions
     public val deliveryGripperOpen = 0.2
     public val deliveryGripperClosed = 0.0
-    public val deliveryPivotLow = 0.28
-    public val deliveryPivotMedium = 0.6
+    public val deliveryPivotLow = 0.27
+    public val deliveryPivotMedium = 0.62
     public val deliveryPivotHigh = 0.95
 
     public val specimenGripperOpen = 0.95
-    public val specimenGripperClosed = 0.4
+    public val specimenGripperClosed = 0.3
 
     public val intakeGripperNeutral = 0.26
     public val intakeGripperClosedSides = 0.7
     public val intakeGripperClosedTop = 0.0
-    public val intakeGripperClosedLoose = 0.67
+    public val intakeGripperClosedLoose = 0.66
 
-    public val intakePivotDown = .67
+    public val intakePivotDown = .675
     public val intakePivotUp = 0.0
 
     public val intakeSlideMax = 0.0
