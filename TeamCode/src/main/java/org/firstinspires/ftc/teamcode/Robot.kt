@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode
 
 import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.ftc.Encoder
 import com.acmerobotics.roadrunner.ftc.LazyImu
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder
 import com.qualcomm.robotcore.hardware.AnalogInput
@@ -43,7 +44,6 @@ class Robot(val hardwareMap: HardwareMap) {
 
     // Limit Switches
     public val deliveryLiftDownSwitch: AnalogInput = hardwareMap.get(AnalogInput::class.java, "delivery_lift_down")
-
     // Sensors
     public val specimenDistanceSensor: DistanceSensor = hardwareMap.get(DistanceSensor::class.java,"specimen_sensor")
     public val transferDistanceSensor: ColorRangeSensor = hardwareMap.get(ColorRangeSensor::class.java, "transfer_sensor")
@@ -62,11 +62,14 @@ class Robot(val hardwareMap: HardwareMap) {
     public val intakeGripperClosedSides = 0.7
     public val intakeGripperClosedTop = 0.0
     public val intakeGripperClosedLoose = 0.66
+    public val intakeGripperClearance = .58
 
     public val intakePivotDown = .675
     public val intakePivotUp = 0.0
+    public val intakePivotMid = .35
 
     public val intakeSlideMax = 0.0
+    public  val intakeSlideMid = .4
     public val intakeSlideMin = .54
 
     public val intakeWristMid = 0.475
@@ -79,7 +82,7 @@ class Robot(val hardwareMap: HardwareMap) {
     // Roadrunner
 //    val roadrunnerMecanumDrive: MecanumDrive
 //    private val voltageSensor: VoltageSensor = hardwareMap.get(VoltageSensor::class.java,"Control Hub")
-//    private val imu: IMU = hardwareMap.get(IMU::class.java,"imu")
+//    private val lazyImu: LazyImu = hardwareMap.get(LazyImu::class.java,"imu")
 //    private val par0: OverflowEncoder = hardwareMap.get(OverflowEncoder::class.java, "par0")
 //    private val par1: OverflowEncoder = hardwareMap.get(OverflowEncoder::class.java, "par1")
 //    private val perp: OverflowEncoder = hardwareMap.get(OverflowEncoder::class.java, "perp")
@@ -102,7 +105,10 @@ class Robot(val hardwareMap: HardwareMap) {
         deliveryFront.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         deliveryBack.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
-//        roadrunnerMecanumDrive = MecanumDrive(frontLeft,backLeft,backRight,frontRight,imu,voltageSensor,par1,par0,perp,pose)
+        deliveryFront.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        deliveryBack.mode = DcMotor.RunMode.RUN_USING_ENCODER
+
+//        roadrunnerMecanumDrive = MecanumDrive(frontLeft,backLeft,backRight,frontRight,lazyImu,voltageSensor,par1,par0,perp,pose)
 
 //        stars.direction = Servo.Direction.FORWARD
     }
