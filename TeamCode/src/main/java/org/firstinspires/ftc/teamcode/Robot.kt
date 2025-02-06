@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode
 
-import com.acmerobotics.roadrunner.Pose2d
-import com.acmerobotics.roadrunner.ftc.Encoder
-import com.acmerobotics.roadrunner.ftc.LazyImu
-import com.acmerobotics.roadrunner.ftc.OverflowEncoder
 import com.qualcomm.robotcore.hardware.AnalogInput
 import com.qualcomm.robotcore.hardware.ColorRangeSensor
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -11,9 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.DistanceSensor
 import com.qualcomm.robotcore.hardware.HardwareMap
-import com.qualcomm.robotcore.hardware.IMU
 import com.qualcomm.robotcore.hardware.Servo
-import com.qualcomm.robotcore.hardware.VoltageSensor
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -55,6 +49,8 @@ class Robot(val hardwareMap: HardwareMap) {
     public val deliveryPivotMedium = 0.62
     public val deliveryPivotHigh = 0.95
 
+    public val specimenDeliveryPosition = 1300
+
     public val specimenGripperOpen = 0.95
     public val specimenGripperClosed = 0.3
 
@@ -69,12 +65,14 @@ class Robot(val hardwareMap: HardwareMap) {
     public val intakePivotMid = .35
 
     public val intakeSlideMax = 0.0
-    public  val intakeSlideMid = .4
+    public val intakeSlideMid = .4
     public val intakeSlideMin = .54
 
     public val intakeWristMid = 0.475
     public val intakeWristLeft = 0.8
     public val intakeWristRight = 0.15
+
+    var inPerTick: Double = 0.00110697703 * 903.361111296
 
 
 
@@ -105,9 +103,14 @@ class Robot(val hardwareMap: HardwareMap) {
         deliveryFront.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         deliveryBack.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
+//        frontLeft.mode = DcMotor.RunMode.RUN_USING_ENCODER
+//        backLeft.mode = DcMotor.RunMode.RUN_USING_ENCODER
+//        frontRight.mode = DcMotor.RunMode.RUN_USING_ENCODER
+//        backRight.mode = DcMotor.RunMode.RUN_USING_ENCODER
+
         deliveryFront.mode = DcMotor.RunMode.RUN_USING_ENCODER
         deliveryBack.mode = DcMotor.RunMode.RUN_USING_ENCODER
-
+//        deliveryBack.mode = DcMotor.RunMode.RUN_TO_POSITION
 //        roadrunnerMecanumDrive = MecanumDrive(frontLeft,backLeft,backRight,frontRight,lazyImu,voltageSensor,par1,par0,perp,pose)
 
 //        stars.direction = Servo.Direction.FORWARD
@@ -143,6 +146,43 @@ class Robot(val hardwareMap: HardwareMap) {
         frontRight.power = rightFrontPower
         backLeft.power = leftBackPower
         backRight.power = rightBackPower
+
     }
+    fun moveForward(x: Double, y: Double, yaw: Double, inches: Double) {
+        var leftFrontPower = y + x - yaw
+        var rightFrontPower = y - x + yaw
+        var leftBackPower = y - x - yaw
+        var rightBackPower = y + x + yaw
+
+        // Normalize wheel powers to be less than 1.0
+        var max = max(abs(leftFrontPower), abs(rightFrontPower))
+        max = max(max, abs(leftBackPower))
+        max = max(max, abs(rightBackPower))
+
+        if (max > 1.0) {
+            leftFrontPower /= max
+            rightFrontPower /= max
+            leftBackPower /= max
+            rightBackPower /= max
+        }
+
+        if (frontLeft.currentPosition > inches){
+            frontLeft.power = 0.0
+            frontRight.power = 0.0
+            backLeft.power = 0.0
+            backRight.power = 0.0
+
+        }
+        inches * inPerTick
+
+        // Send powers to the wheels.
+        frontLeft.power = leftFrontPower
+        frontRight.power = rightFrontPower
+        backLeft.power = leftBackPower
+        backRight.power = rightBackPower
+
+
+    }
+
 
 }

@@ -155,12 +155,16 @@ class Tele : OpMode() {
             aPressed = gamepad2.a
 
             if (robot.intakePivot.position == robot.intakePivotUp && robot.intakeSlide.position < .48) {
-                wristAngle = if (robot.intakeGripper.position == robot.intakeGripperClosedTop) {
-                    robot.intakeWristLeft
-                } else {
-                    robot.intakeWristMid
+                wristAngle = robot.intakeWristLeft
                 }
             }
+//            if (robot.intakePivot.position == robot.intakePivotUp && robot.intakeSlide.position < .48) {
+//                wristAngle = if (robot.intakeGripper.position == robot.intakeGripperClosedTop) {
+//                    robot.intakeWristLeft
+//                } else {
+//                    robot.intakeWristMid
+//                }
+//            }
 
 
             robot.intakeWrist.position = wristAngle
@@ -243,8 +247,8 @@ class Tele : OpMode() {
         telemetry.addData("Action Stage", actionStage)
         telemetry.addData("runtime", runtime)
 
-//        telemetry.addData("Transfer color sensor", robot.transferDistanceSensor.red())
-        telemetry.update()
+//     telemetry.addData("Transfer color sensor", robot.transferDistanceSensor.red())
+//        telemetry.update()
     }
 
 }
