@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.HardwareMap
@@ -7,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import kotlin.math.abs
 
 @TeleOp(name = "Tele", group="Robot")
-class Tele : OpMode() {
+class Tele() : OpMode(), Parcelable {
 
     private lateinit var robot: Robot
 
@@ -18,13 +20,47 @@ class Tele : OpMode() {
     private var sequenceRunning: Boolean = false
     private var actionStage = 0
 
+    constructor(parcel: Parcel) : this() {
+        dpadRightPressed = parcel.readByte() != 0.toByte()
+        aPressed = parcel.readByte() != 0.toByte()
+        wristAngle = parcel.readDouble()
+        slidesAngle = parcel.readDouble()
+        sequenceRunning = parcel.readByte() != 0.toByte()
+        actionStage = parcel.readInt()
+    }
+
     override fun init() {
         robot = Robot(hardwareMap = hardwareMap)
 
         resetRuntime()
     }
 
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeByte(if (dpadRightPressed) 1 else 0)
+        parcel.writeByte(if (aPressed) 1 else 0)
+        parcel.writeDouble(wristAngle)
+        parcel.writeDouble(slidesAngle)
+        parcel.writeByte(if (sequenceRunning) 1 else 0)
+        parcel.writeInt(actionStage)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<Tele> {
+        override fun createFromParcel(parcel: Parcel): Tele {
+            return Tele(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Tele?> {
+            return arrayOfNulls(size)
+        }
+    }
+
     override fun loop() {
+
+
         robot.moveRobot(
             x = gamepad1.left_stick_x.toDouble(),
             y = -gamepad1.left_stick_y.toDouble(),
@@ -48,6 +84,7 @@ class Tele : OpMode() {
                         resetRuntime()
                         actionStage++
                     }
+
                     1 -> {
                         if (runtime >= .3) {
                             robot.intakeWrist.position = robot.intakeWristLeft
@@ -56,6 +93,7 @@ class Tele : OpMode() {
                             actionStage++
                         }
                     }
+
                     2 -> {
                         if (runtime >= .3) {
                             robot.intakePivot.position = robot.intakePivotUp
@@ -63,6 +101,7 @@ class Tele : OpMode() {
                             actionStage++
                         }
                     }
+
                     3 -> {
                         if (runtime >= .4) {
                             robot.intakeSlide.position = robot.intakeSlideMin
@@ -70,6 +109,7 @@ class Tele : OpMode() {
                             actionStage++
                         }
                     }
+
                     4 -> {
                         if (runtime >= .3) {
                             robot.deliveryGripper.position = robot.deliveryGripperClosed
@@ -77,6 +117,7 @@ class Tele : OpMode() {
                             actionStage++
                         }
                     }
+
                     5 -> {
                         if (runtime >= .2) {
                             robot.intakeGripper.position = robot.intakeGripperNeutral
@@ -98,9 +139,10 @@ class Tele : OpMode() {
                         resetRuntime()
                         actionStage++
                     }
+
                     1 -> {
                         if (runtime >= 1) {
-                            if (robot.intakeGripper.position ==  robot.intakeGripperClosedTop) {
+                            if (robot.intakeGripper.position == robot.intakeGripperClosedTop) {
 
                             }
                             robot.intakeGripper.position = robot.intakeGripperClosedSides
@@ -157,7 +199,7 @@ class Tele : OpMode() {
             if (robot.intakePivot.position == robot.intakePivotUp && robot.intakeSlide.position < .48) {
                 wristAngle = robot.intakeWristLeft
                 }
-            }
+
 //            if (robot.intakePivot.position == robot.intakePivotUp && robot.intakeSlide.position < .48) {
 //                wristAngle = if (robot.intakeGripper.position == robot.intakeGripperClosedTop) {
 //                    robot.intakeWristLeft
@@ -220,35 +262,44 @@ class Tele : OpMode() {
             }
 
             //Delivery Slides needs encoder
-            if (robot.deliveryLiftDownSwitch.voltage < 2 ) {
+            if (robot.deliveryLiftDownSwitch.voltage < 2) {
                 if (robot.intakeWrist.position != robot.intakeWristLeft) {
                     robot.intakeGripper.position = robot.intakeGripperClearance
                 }
             }
 
-            if (gamepad2.right_stick_y > 0.1 && robot.deliveryLiftDownSwitch.voltage < 2 ) {
-                robot.deliveryFront.power = gamepad2.right_stick_y.toDouble()
-                robot.deliveryBack.power = gamepad2.right_stick_y.toDouble()
-            } else if (gamepad2.right_stick_y < 0.1 ) {
-                robot.deliveryFront.power = gamepad2.right_stick_y.toDouble()
-                robot.deliveryBack.power = gamepad2.right_stick_y.toDouble()
+            if (gamepad2.right_stick_y > 0.1 && robot.deliveryLiftDownSwitch.voltage < 2) {
+                if (robot.deliveryBack.currentPosition < 300) {
+                    robot.deliveryFront.power = 0.0
+                    robot.deliveryBack.power = 0.0
+                } else {
+                    robot.deliveryFront.power = (gamepad2.right_stick_y.toDouble() / 2)
+                    robot.deliveryBack.power = (gamepad2.right_stick_y.toDouble() / 2)
+                }
+            } else if (gamepad2.right_stick_y < 0.1 && robot.deliveryBack.currentPosition < 2500) {
+                if (robot.deliveryBack.currentPosition > 2400) {
+                    robot.deliveryFront.power = -0.1
+                    robot.deliveryBack.power = -0.1
+                } else {
+                    robot.deliveryFront.power = gamepad2.right_stick_y.toDouble()
+                    robot.deliveryBack.power = gamepad2.right_stick_y.toDouble()
+                }
             } else {
                 robot.deliveryFront.power = 0.0
                 robot.deliveryBack.power = 0.0
             }
 
+
         }
-
-
         // Distance Sensors
+
         telemetry.addData("gamepad2 dpad_right", gamepad2.dpad_right)
         telemetry.addData("Delivery Front Encoder", robot.deliveryFront.currentPosition)
         telemetry.addData("Delivery Back Encoder", robot.deliveryBack.currentPosition)
         telemetry.addData("Action Stage", actionStage)
         telemetry.addData("runtime", runtime)
 
-//     telemetry.addData("Transfer color sensor", robot.transferDistanceSensor.red())
-//        telemetry.update()
+//        telemetry.addData("Transfer color sensor", robot.transferDistanceSensor.red())
+        telemetry.update()
     }
-
 }
