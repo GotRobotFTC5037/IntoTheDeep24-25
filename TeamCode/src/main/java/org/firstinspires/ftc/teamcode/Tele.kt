@@ -4,6 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import kotlin.math.abs
@@ -19,6 +20,8 @@ class Tele() : OpMode(), Parcelable {
     private var slidesAngle = 0.54
     private var sequenceRunning: Boolean = false
     private var actionStage = 0
+    private var deliveryHeightGoal = 2500
+    private var resetEncoder: Boolean = false
 
     constructor(parcel: Parcel) : this() {
         dpadRightPressed = parcel.readByte() != 0.toByte()
@@ -127,12 +130,10 @@ class Tele() : OpMode(), Parcelable {
                         }
                     }
                 }
-                if (actionStage == 6) {
-                    sequenceRunning = false
-                }
             } else {
                 when (actionStage) {
                     0 -> {
+                        robot.intakeWrist.position = robot.intakeWristMid
                         robot.deliveryPivot.position = robot.deliveryPivotLow
                         robot.deliveryGripper.position = robot.deliveryGripperOpen
                         robot.intakePivot.position = robot.intakePivotMid
@@ -141,18 +142,53 @@ class Tele() : OpMode(), Parcelable {
                     }
 
                     1 -> {
-                        if (runtime >= 1) {
-                            if (robot.intakeGripper.position == robot.intakeGripperClosedTop) {
+                        if (runtime >= .7) {
+                            robot.intakeSlide.position = robot.intakeSlideMid
+                            resetRuntime()
+                            actionStage++
+                        }
+                    }
 
-                            }
+                    2 -> {
+                        if (runtime >= .3) {
                             robot.intakeGripper.position = robot.intakeGripperClosedSides
                             robot.intakePivot.position = robot.intakePivotUp
+                            resetRuntime()
+                            actionStage++
+                        }
+                    }
+
+                    3 -> {
+                        if (runtime >= .4) {
+                            robot.intakeSlide.position = robot.intakeSlideMin
+                            resetRuntime()
+                            actionStage++
+                        }
+                    }
+
+                    4 -> {
+                        if (runtime >= .3) {
+                            robot.deliveryGripper.position = robot.deliveryGripperClosed
+                            resetRuntime()
+                            actionStage++
+                        }
+                    }
+
+                    5 -> {
+                        if (runtime >= .2) {
+                            robot.intakeGripper.position = robot.intakeGripperClearance
+                            slidesAngle = robot.intakeSlideMin
+                            wristAngle = robot.intakeWristMid
+                            actionStage++
                         }
                     }
                 }
             }
         }
 
+        if (actionStage == 6) {
+            sequenceRunning = false
+        }
 
         if (!sequenceRunning) {
             //Intake Movement
@@ -172,13 +208,13 @@ class Tele() : OpMode(), Parcelable {
                 if (wristAngle >= robot.intakeWristLeft) {
                     wristAngle = robot.intakeWristLeft
                 } else {
-                    wristAngle += (.005 * gamepad2.left_trigger)
+                    wristAngle += (.006 * gamepad2.left_trigger)
                 }
             } else if (gamepad2.right_trigger > 0.01) {
                 if (wristAngle <= robot.intakeWristRight) {
                     wristAngle = robot.intakeWristRight
                 } else {
-                    wristAngle -= (.005 * gamepad2.right_trigger)
+                    wristAngle -= (.006 * gamepad2.right_trigger)
                 }
             }
 
@@ -188,25 +224,20 @@ class Tele() : OpMode(), Parcelable {
                 if (gamepad2.a) {
                     if (robot.intakePivot.position == robot.intakePivotUp) {
                         robot.intakePivot.position = robot.intakePivotDown
+                        robot.intakeGripper.position = robot.intakeGripperNeutral
+                        wristAngle = robot.intakeWristMid
                     } else {
                         robot.intakePivot.position = robot.intakePivotUp
                     }
                 }
             }
-
             aPressed = gamepad2.a
 
-            if (robot.intakePivot.position == robot.intakePivotUp && robot.intakeSlide.position < .48) {
-                wristAngle = robot.intakeWristLeft
-                }
 
-//            if (robot.intakePivot.position == robot.intakePivotUp && robot.intakeSlide.position < .48) {
-//                wristAngle = if (robot.intakeGripper.position == robot.intakeGripperClosedTop) {
-//                    robot.intakeWristLeft
-//                } else {
-//                    robot.intakeWristMid
-//                }
-//            }
+
+            if (robot.intakePivot.position == robot.intakePivotUp && robot.intakeSlide.position < .52) {
+                wristAngle = robot.intakeWristLeft
+            }
 
 
             robot.intakeWrist.position = wristAngle
@@ -216,13 +247,13 @@ class Tele() : OpMode(), Parcelable {
                 if (slidesAngle >= robot.intakeSlideMin) {
                     slidesAngle = robot.intakeSlideMin
                 } else {
-                    slidesAngle += (.004 * gamepad2.left_stick_y)
+                    slidesAngle += (.005 * gamepad2.left_stick_y)
                 }
             } else if (gamepad2.left_stick_y < -0.01) {
                 if (slidesAngle <= robot.intakeSlideMax) {
                     slidesAngle = robot.intakeSlideMax
                 } else {
-                    slidesAngle -= (.004 * abs(gamepad2.left_stick_y))
+                    slidesAngle -= (.005 * abs(gamepad2.left_stick_y))
                 }
             }
             robot.intakeSlide.position = slidesAngle
@@ -268,6 +299,12 @@ class Tele() : OpMode(), Parcelable {
                 }
             }
 
+            if (gamepad2.right_stick_button) {
+                deliveryHeightGoal = 1400
+            } else {
+                deliveryHeightGoal = 2500
+            }
+
             if (gamepad2.right_stick_y > 0.1 && robot.deliveryLiftDownSwitch.voltage < 2) {
                 if (robot.deliveryBack.currentPosition < 300) {
                     robot.deliveryFront.power = 0.0
@@ -276,8 +313,9 @@ class Tele() : OpMode(), Parcelable {
                     robot.deliveryFront.power = (gamepad2.right_stick_y.toDouble() / 2)
                     robot.deliveryBack.power = (gamepad2.right_stick_y.toDouble() / 2)
                 }
-            } else if (gamepad2.right_stick_y < 0.1 && robot.deliveryBack.currentPosition < 2500) {
-                if (robot.deliveryBack.currentPosition > 2400) {
+            } else
+                if (gamepad2.right_stick_y < 0.1 && robot.deliveryBack.currentPosition < deliveryHeightGoal) {
+                if (robot.deliveryBack.currentPosition > deliveryHeightGoal - 100) {
                     robot.deliveryFront.power = -0.1
                     robot.deliveryBack.power = -0.1
                 } else {
@@ -289,12 +327,20 @@ class Tele() : OpMode(), Parcelable {
                 robot.deliveryBack.power = 0.0
             }
 
+            if (robot.deliveryLiftDownSwitch.voltage > 2 && !resetEncoder) {
+                robot.deliveryBack.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+                robot.deliveryBack.mode = DcMotor.RunMode.RUN_USING_ENCODER
+                resetEncoder = true
+            }
+
+            if (robot.deliveryLiftDownSwitch.voltage < 2) {
+                resetEncoder = false
+            }
 
         }
         // Distance Sensors
 
         telemetry.addData("gamepad2 dpad_right", gamepad2.dpad_right)
-        telemetry.addData("Delivery Front Encoder", robot.deliveryFront.currentPosition)
         telemetry.addData("Delivery Back Encoder", robot.deliveryBack.currentPosition)
         telemetry.addData("Action Stage", actionStage)
         telemetry.addData("runtime", runtime)

@@ -50,9 +50,10 @@ class Robot(val hardwareMap: HardwareMap) {
     public val deliveryPivotHigh = 0.95
 
     public val specimenDeliveryPosition = 1300
+    public val deliveryMaxHeight = 2500
 
     public val specimenGripperOpen = 0.95
-    public val specimenGripperClosed = 0.3
+    public val specimenGripperClosed = 0.4
 
     public val intakeGripperNeutral = 0.26
     public val intakeGripperClosedSides = 0.7
@@ -62,7 +63,7 @@ class Robot(val hardwareMap: HardwareMap) {
 
     public val intakePivotDown = .675
     public val intakePivotUp = 0.0
-    public val intakePivotMid = .35
+    public val intakePivotMid = .25
 
     public val intakeSlideMax = 0.0
     public val intakeSlideMid = .4

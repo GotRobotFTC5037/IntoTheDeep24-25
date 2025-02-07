@@ -19,9 +19,9 @@ import com.acmerobotics.roadrunner.TimeTrajectory
 @Autonomous(name = "Specimen Auto", group = "Auto")
 class SpecimenAuto : LinearOpMode() {
 
-    private fun TrajectoryActionBuilder() {
-
-    }
+//    private fun TrajectoryActionBuilder() {
+//
+//    }
 
     override fun runOpMode() {
         val robot = Robot(hardwareMap)
@@ -47,8 +47,6 @@ class SpecimenAuto : LinearOpMode() {
 //        sleep(1000)
 //        robot.moveForward(0.5,0.5,0.0,0.0)
 //        sleep(1000)
-
-
 
     }
 
