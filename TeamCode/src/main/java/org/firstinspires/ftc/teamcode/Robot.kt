@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.DistanceSensor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
+import org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -15,10 +16,10 @@ import kotlin.math.max
 class Robot(val hardwareMap: HardwareMap) {
 
     // Drive Motors
-    private val frontLeft: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "fl")
-    private val backLeft: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "bl")
-    private val frontRight: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "fr")
-    private val backRight: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "br")
+    public val frontLeft: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "fl")
+    public val backLeft: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "bl")
+    public val frontRight: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "fr")
+    public val backRight: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "br")
 
     // Other Motors
     public val deliveryFront: DcMotor = hardwareMap.get(DcMotor::class.java, "delivery_front")
@@ -45,7 +46,7 @@ class Robot(val hardwareMap: HardwareMap) {
     // Servo Positions
     public val deliveryGripperOpen = 0.2
     public val deliveryGripperClosed = 0.0
-    public val deliveryPivotLow = 0.27
+    public val deliveryPivotLow = 0.28
     public val deliveryPivotMedium = 0.62
     public val deliveryPivotHigh = 0.95
 
@@ -74,7 +75,6 @@ class Robot(val hardwareMap: HardwareMap) {
     public val intakeWristRight = 0.15
 
     var inPerTick: Double = 0.00110697703 * 903.361111296
-
 
 
 
@@ -111,10 +111,12 @@ class Robot(val hardwareMap: HardwareMap) {
 
         deliveryFront.mode = DcMotor.RunMode.RUN_USING_ENCODER
         deliveryBack.mode = DcMotor.RunMode.RUN_USING_ENCODER
+
 //        deliveryBack.mode = DcMotor.RunMode.RUN_TO_POSITION
 //        roadrunnerMecanumDrive = MecanumDrive(frontLeft,backLeft,backRight,frontRight,lazyImu,voltageSensor,par1,par0,perp,pose)
 
 //        stars.direction = Servo.Direction.FORWARD
+
     }
 
     /**
@@ -149,6 +151,90 @@ class Robot(val hardwareMap: HardwareMap) {
         backRight.power = rightBackPower
 
     }
+
+    fun moveDiagonally(
+        power: Double,
+        timeMs: Long,
+        direction: String
+    ) {
+        val clippedPower = power.coerceIn(-1.0, 1.0)
+
+        // Set motor powers for diagonal movement
+        when (direction.lowercase()) {
+            "forward_left" -> {
+                frontLeft.power = 0.0
+                frontRight.power = clippedPower
+                backLeft.power = clippedPower
+                backRight.power = 0.0
+            }
+            "forward_right" -> {
+                frontLeft.power = clippedPower
+                frontRight.power = 0.0
+                backLeft.power = 0.0
+                backRight.power = clippedPower
+            }
+            "backward_left" -> {
+                frontLeft.power = -clippedPower
+                frontRight.power = 0.0
+                backLeft.power = 0.0
+                backRight.power = -clippedPower
+            }
+            "backward_right" -> {
+                frontLeft.power = 0.0
+                frontRight.power = -clippedPower
+                backLeft.power = -clippedPower
+                backRight.power = 0.0
+            }
+            else -> {
+                println("Invalid direction. Use 'forward_left', 'forward_right', 'backward_left', or 'backward_right'.")
+                return
+            }
+        }
+
+        val startTime = System.currentTimeMillis()
+        while (System.currentTimeMillis() - startTime < timeMs) {
+            frontLeft.power += 0
+            frontRight.power -= 0
+            backLeft.power += 0
+            backRight.power -= 0
+        }
+
+        // Stop motors after the time has elapsed
+        frontLeft.power = 0.0
+        frontRight.power = 0.0
+        backLeft.power = 0.0
+        backRight.power = 0.0
+    }
+
+    fun turnRobot(power: Double, timeMs: Long) {
+        // Set opposite power to turn
+        frontLeft.power = power
+        backLeft.power = power
+        frontRight.power = -power
+        backRight.power = -power // Opposite direction for turning
+
+       Thread.sleep(timeMs) // Wait for the turn to complete
+
+        // Stop motors after turning
+        frontLeft.power = 0.0
+        backLeft.power = 0.0
+        frontRight.power = 0.0
+        backRight.power = 0.0
+    }
+
+    fun moveLiftToPosition(targetPosition: Int, power: Double) {
+
+        deliveryBack.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+
+        while (deliveryBack.currentPosition <= targetPosition) {
+            deliveryBack.power = -power
+            deliveryFront.power = -power
+        }
+        deliveryBack.power = 0.0
+        deliveryFront.power = 0.0
+
+    }
+
     fun moveForward(x: Double, y: Double, yaw: Double, inches: Double) {
         var leftFrontPower = y + x - yaw
         var rightFrontPower = y - x + yaw

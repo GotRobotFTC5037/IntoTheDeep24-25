@@ -2,11 +2,10 @@ package org.firstinspires.ftc.teamcode
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.acmerobotics.roadrunner.Pose2d
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.HardwareMap
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import kotlin.math.abs
 
 @TeleOp(name = "Tele", group="Robot")
@@ -22,6 +21,7 @@ class Tele() : OpMode(), Parcelable {
     private var actionStage = 0
     private var deliveryHeightGoal = 2500
     private var resetEncoder: Boolean = false
+    private var allowWristMove: Boolean = true
 
     constructor(parcel: Parcel) : this() {
         dpadRightPressed = parcel.readByte() != 0.toByte()
@@ -34,6 +34,7 @@ class Tele() : OpMode(), Parcelable {
 
     override fun init() {
         robot = Robot(hardwareMap = hardwareMap)
+
 
         resetRuntime()
     }
@@ -59,6 +60,17 @@ class Tele() : OpMode(), Parcelable {
         override fun newArray(size: Int): Array<Tele?> {
             return arrayOfNulls(size)
         }
+    }
+
+    override fun start() {
+        robot.intakeWrist.position = robot.intakeWristLeft
+        robot.intakeGripper.position = robot.intakeGripperClosedLoose
+        robot.intakePivot.position = robot.intakePivotUp
+
+        robot.deliveryPivot.position = robot.deliveryPivotLow
+        robot.deliveryGripper.position = robot.deliveryGripperOpen
+
+
     }
 
     override fun loop() {
@@ -226,21 +238,19 @@ class Tele() : OpMode(), Parcelable {
                         robot.intakePivot.position = robot.intakePivotDown
                         robot.intakeGripper.position = robot.intakeGripperNeutral
                         wristAngle = robot.intakeWristMid
+                        robot.intakeWrist.position = robot.intakeWristMid
                     } else {
                         robot.intakePivot.position = robot.intakePivotUp
+                        robot.intakeWrist.position = robot.intakeWristLeft
                     }
                 }
             }
             aPressed = gamepad2.a
 
 
-
-            if (robot.intakePivot.position == robot.intakePivotUp && robot.intakeSlide.position < .52) {
-                wristAngle = robot.intakeWristLeft
+            if (gamepad2.left_trigger > 0.01 || gamepad2.right_trigger > 0.01) {
+                robot.intakeWrist.position = wristAngle
             }
-
-
-            robot.intakeWrist.position = wristAngle
 
             //Slides
             if (gamepad2.left_stick_y > 0.01) {
@@ -292,7 +302,7 @@ class Tele() : OpMode(), Parcelable {
                 dpadRightPressed = false
             }
 
-            //Delivery Slides needs encoder
+
             if (robot.deliveryLiftDownSwitch.voltage < 2) {
                 if (robot.intakeWrist.position != robot.intakeWristLeft) {
                     robot.intakeGripper.position = robot.intakeGripperClearance
@@ -340,10 +350,21 @@ class Tele() : OpMode(), Parcelable {
         }
         // Distance Sensors
 
-        telemetry.addData("gamepad2 dpad_right", gamepad2.dpad_right)
-        telemetry.addData("Delivery Back Encoder", robot.deliveryBack.currentPosition)
-        telemetry.addData("Action Stage", actionStage)
-        telemetry.addData("runtime", runtime)
+        //        Action trajectoryActionChosen2;
+//        trajectoryActionChosen2 = park.build();
+//
+//                Actions.runBlocking(
+//                new SequentialAction(
+//                        trajectoryActionChosen
+////                        trajectoryActionChosen2
+//
+//                )
+//        );
+
+//        telemetry.addData("gamepad2 dpad_right", gamepad2.dpad_right)
+//        telemetry.addData("Delivery Back Encoder", robot.deliveryBack.currentPosition)
+//        telemetry.addData("Action Stage", actionStage)
+//        telemetry.addData("runtime", runtime)
 
 //        telemetry.addData("Transfer color sensor", robot.transferDistanceSensor.red())
         telemetry.update()
