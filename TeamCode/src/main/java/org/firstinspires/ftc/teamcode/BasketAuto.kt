@@ -16,4 +16,3 @@ class BasketAuto : LinearOpMode() {
         sleep(500)
     }
 }
-

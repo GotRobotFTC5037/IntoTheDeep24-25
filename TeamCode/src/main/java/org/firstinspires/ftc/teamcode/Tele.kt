@@ -15,7 +15,7 @@ class Tele() : OpMode() {
     private var dpadRightPressed: Boolean = false
     private var aPressed: Boolean = false
     private var wristAngle = 0.475
-    private var slidesAngle = 0.37
+    private var slidesAngle = 0.54
     private var sequenceRunning: Boolean = false
     private var actionStage = 0
     private var deliveryHeightGoal = 2500
@@ -102,7 +102,7 @@ class Tele() : OpMode() {
                     }
 
                     4 -> {
-                        if (runtime >= .4) {
+                        if (runtime >= .3) {
                             robot.deliveryGripper.position = robot.deliveryGripperClosed
                             resetRuntime()
                             actionStage++
@@ -155,7 +155,7 @@ class Tele() : OpMode() {
                     }
 
                     4 -> {
-                        if (runtime >= .4) {
+                        if (runtime >= .3) {
                             robot.deliveryGripper.position = robot.deliveryGripperClosed
                             resetRuntime()
                             actionStage++
@@ -301,17 +301,17 @@ class Tele() : OpMode() {
                 }
             } else
                 if (gamepad2.right_stick_y < 0.1 && robot.deliveryBack.currentPosition < deliveryHeightGoal) {
-                if (robot.deliveryBack.currentPosition > deliveryHeightGoal - 100) {
-                    robot.deliveryFront.power = -0.1
-                    robot.deliveryBack.power = -0.1
+                    if (robot.deliveryBack.currentPosition > deliveryHeightGoal - 100) {
+                        robot.deliveryFront.power = -0.1
+                        robot.deliveryBack.power = -0.1
+                    } else {
+                        robot.deliveryFront.power = gamepad2.right_stick_y.toDouble()
+                        robot.deliveryBack.power = gamepad2.right_stick_y.toDouble()
+                    }
                 } else {
-                    robot.deliveryFront.power = gamepad2.right_stick_y.toDouble()
-                    robot.deliveryBack.power = gamepad2.right_stick_y.toDouble()
+                    robot.deliveryFront.power = 0.0
+                    robot.deliveryBack.power = 0.0
                 }
-            } else {
-                robot.deliveryFront.power = 0.0
-                robot.deliveryBack.power = 0.0
-            }
 
             if (robot.deliveryLiftDownSwitch.voltage > 2 && !resetEncoder) {
                 robot.deliveryBack.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
