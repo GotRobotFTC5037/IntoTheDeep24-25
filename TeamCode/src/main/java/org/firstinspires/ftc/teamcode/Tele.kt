@@ -15,7 +15,7 @@ class Tele() : OpMode() {
     private var dpadRightPressed: Boolean = false
     private var aPressed: Boolean = false
     private var wristAngle = 0.475
-    private var slidesAngle = 0.54
+    private var slidesAngle = 0.37
     private var sequenceRunning: Boolean = false
     private var actionStage = 0
     private var deliveryHeightGoal = 2500
@@ -102,7 +102,7 @@ class Tele() : OpMode() {
                     }
 
                     4 -> {
-                        if (runtime >= .3) {
+                        if (runtime >= .4) {
                             robot.deliveryGripper.position = robot.deliveryGripperClosed
                             resetRuntime()
                             actionStage++
@@ -155,7 +155,7 @@ class Tele() : OpMode() {
                     }
 
                     4 -> {
-                        if (runtime >= .3) {
+                        if (runtime >= .4) {
                             robot.deliveryGripper.position = robot.deliveryGripperClosed
                             resetRuntime()
                             actionStage++
@@ -193,16 +193,16 @@ class Tele() : OpMode() {
 
             //Wrist
             if (gamepad2.left_trigger > 0.01) {
-                if (wristAngle >= robot.intakeWristLeft) {
+                if (wristAngle <= robot.intakeWristLeft) {
                     wristAngle = robot.intakeWristLeft
                 } else {
-                    wristAngle += (.006 * gamepad2.left_trigger)
+                    wristAngle -= (.006 * gamepad2.left_trigger)
                 }
             } else if (gamepad2.right_trigger > 0.01) {
-                if (wristAngle <= robot.intakeWristRight) {
+                if (wristAngle >= robot.intakeWristRight) {
                     wristAngle = robot.intakeWristRight
                 } else {
-                    wristAngle -= (.006 * gamepad2.right_trigger)
+                    wristAngle += (.006 * gamepad2.right_trigger)
                 }
             }
 
@@ -230,16 +230,16 @@ class Tele() : OpMode() {
 
             //Slides
             if (gamepad2.left_stick_y > 0.01) {
-                if (slidesAngle >= robot.intakeSlideMin) {
+                if (slidesAngle <= robot.intakeSlideMin) {
                     slidesAngle = robot.intakeSlideMin
                 } else {
-                    slidesAngle += (.005 * gamepad2.left_stick_y)
+                    slidesAngle -= (.005 * gamepad2.left_stick_y)
                 }
             } else if (gamepad2.left_stick_y < -0.01) {
-                if (slidesAngle <= robot.intakeSlideMax) {
+                if (slidesAngle >= robot.intakeSlideMax) {
                     slidesAngle = robot.intakeSlideMax
                 } else {
-                    slidesAngle -= (.005 * abs(gamepad2.left_stick_y))
+                    slidesAngle += (.005 * abs(gamepad2.left_stick_y))
                 }
             }
             robot.intakeSlide.position = slidesAngle

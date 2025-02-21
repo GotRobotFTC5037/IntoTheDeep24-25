@@ -62,39 +62,39 @@ class SpecimenAuto : OpMode() {
                 setPathState(2)
             }
 
-//            2 -> if (!robot.follower.isBusy) {
-//                robot.follower.setMaxPower(1.0)
-//                robot.follower.followPath(action2OuttakeOne, true)
-//                setPathState(3)
-//            }
-//
-//            3 -> if (!robot.follower.isBusy) {
-//                robot.follower.holdPoint(secondPoseOuttake)
-//                SystemClock.sleep(450)
-//                robot.follower.setMaxPower(1.0)
-//                robot.follower.followPath(action3DoubleCurvedPrePush, true)
-//                setPathState(4)
-//            }
-//
-//            4 -> if (!robot.follower.isBusy) {
-//                robot.follower.followPath(action4PushOne, true)
-//                setPathState(5)
-//            }
-//
-//            5 -> if (!robot.follower.isBusy) {
-//                robot.follower.followPath(action5CurvedForPushTwo, true)
-//                setPathState(6)
-//            }
-//
-//            6 -> if (!robot.follower.isBusy) {
-//                robot.follower.followPath(action6PushTwo, true)
-//                setPathState(7)
-//            }
-//
-//            7 -> if (!robot.follower.isBusy) {
-//                robot.follower.followPath(action9PreIntakeOne, true)
-//                setPathState(-1)
-//            }
+            2 -> if (!robot.follower.isBusy) {
+                robot.follower.setMaxPower(1.0)
+                robot.follower.followPath(action2OuttakeOne, true)
+                setPathState(3)
+            }
+
+            3 -> if (!robot.follower.isBusy) {
+                robot.follower.holdPoint(secondPoseOuttake)
+                SystemClock.sleep(450)
+                robot.follower.setMaxPower(1.0)
+                robot.follower.followPath(action3DoubleCurvedPrePush, true)
+                setPathState(4)
+            }
+
+            4 -> if (!robot.follower.isBusy) {
+                robot.follower.followPath(action4PushOne, true)
+                setPathState(5)
+            }
+
+            5 -> if (!robot.follower.isBusy) {
+                robot.follower.followPath(action5CurvedForPushTwo, true)
+                setPathState(6)
+            }
+
+            6 -> if (!robot.follower.isBusy) {
+                robot.follower.followPath(action6PushTwo, true)
+                setPathState(7)
+            }
+
+            7 -> if (!robot.follower.isBusy) {
+                robot.follower.followPath(action9PreIntakeOne, true)
+                setPathState(-1)
+            }
         }
     }
 
