@@ -286,9 +286,9 @@ class Tele() : OpMode() {
             }
 
             if (gamepad2.right_stick_button) {
-                deliveryHeightGoal = 1400
+                deliveryHeightGoal = robot.specimenDeliveryPosition
             } else {
-                deliveryHeightGoal = 2500
+                deliveryHeightGoal = robot.deliveryMaxHeight
             }
 
             if (gamepad2.right_stick_y > 0.1 && robot.deliveryLiftDownSwitch.voltage < 2) {

@@ -13,6 +13,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.DistanceSensor
 import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.PIDCoefficients
+import com.qualcomm.robotcore.hardware.PIDFCoefficients
 import com.qualcomm.robotcore.hardware.Servo
 import kotlin.math.abs
 import kotlin.math.max
@@ -60,7 +62,7 @@ class Robot(val hardwareMap: HardwareMap) {
                 0.0
             ) // Not being used, @see useSecondaryHeadingPID
 
-            FollowerConstants.drivePIDFCoefficients.setCoefficients(0.01, 0.0, 0.0001, 0.6, 0.0)
+            FollowerConstants.drivePIDFCoefficients.setCoefficients(0.01, 0.0, 0.00008, 0.6, 0.0)
             FollowerConstants.useSecondaryDrivePID = false
             FollowerConstants.secondaryDrivePIDFCoefficients.setCoefficients(
                 0.1,
@@ -105,8 +107,8 @@ class Robot(val hardwareMap: HardwareMap) {
     val backRight: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "br")
 
     // Other Motors
-    val deliveryFront: DcMotor = hardwareMap.get(DcMotor::class.java, "delivery_front")
-    val deliveryBack: DcMotor = hardwareMap.get(DcMotor::class.java, "delivery_back")
+    val deliveryFront: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "delivery_front")
+    val deliveryBack: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "delivery_back")
 
     // Servos
     val intakeSlide: Servo = hardwareMap.get(Servo::class.java, "intake_slide")
@@ -129,7 +131,7 @@ class Robot(val hardwareMap: HardwareMap) {
     val deliveryPivotMedium = 0.55
     val deliveryPivotHigh = 0.2
 
-    val specimenDeliveryPosition = 1300
+    val specimenDeliveryPosition = 1400
     val deliveryMaxHeight = 2500
 
     val specimenGripperOpen = 0.95
@@ -173,6 +175,9 @@ class Robot(val hardwareMap: HardwareMap) {
         deliveryFront.mode = DcMotor.RunMode.RUN_USING_ENCODER
         deliveryBack.mode = DcMotor.RunMode.RUN_USING_ENCODER
 
+        val pidNew = PIDFCoefficients(0.0007, 0.0, 0.0, 0.0)
+        deliveryBack.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidNew)
+
         Constants.setConstants(RobotFollowerConstants::class.java, RobotLocalizerConstants::class.java)
     }
 
@@ -213,23 +218,33 @@ class Robot(val hardwareMap: HardwareMap) {
 
     fun moveLiftToPosition(targetPosition: Int, power: Double) {
 
-        deliveryBack.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-
-        while (deliveryBack.currentPosition <= targetPosition) {
+        if(targetPosition > deliveryBack.currentPosition) {
             deliveryBack.power = -power
             deliveryFront.power = -power
+        } else {
+            deliveryBack.power = 0.0
+            deliveryFront.power = 0.0
         }
-        deliveryBack.power = 0.0
-        deliveryFront.power = 0.0
+    }
 
+    fun  moveLiftToBottom() {
+        if(deliveryBack.currentPosition > 300) {
+            deliveryBack.power = 0.4
+            deliveryFront.power = 0.4
+        } else  {
+            deliveryFront.power = 0.0
+            deliveryBack.power = 0.0
+        }
     }
 
     fun initializeInAuto() {
         intakeSlide.position = intakeSlideMin
-        deliveryPivot.position = deliveryPivotLow
+        deliveryPivot.position = deliveryPivotHigh
         intakeWrist.position = intakeWristLeft
         deliveryGripper.position = deliveryGripperClosed
         intakeGripper.position = intakeGripperNeutral
+        specimenGripper.position = specimenGripperClosed
+
     }
 
 }
