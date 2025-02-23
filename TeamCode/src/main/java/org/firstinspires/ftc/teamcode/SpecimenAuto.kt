@@ -49,9 +49,8 @@ class SpecimenAuto : OpMode() {
 
     private var action1ScorePreload: PathChain? = null
     private var action2AfterPreload: PathChain? = null
-    private var action3PushSample1: PathChain? = null
-    private var action4PushSample2: PathChain? = null
-    private var action5PickUpSpecimen1: PathChain? = null
+    private var action3PushSample2: PathChain? = null
+    private var action4PickUpSpecimen1: PathChain? = null
 
     fun buildPaths() {
         action1ScorePreload = robot.follower.pathBuilder()
@@ -94,17 +93,11 @@ class SpecimenAuto : OpMode() {
                 )
             )
             .setConstantHeadingInterpolation(beforeMovingSample3.heading)
+            .addPath(BezierLine(Point(beforeMovingSample3), Point(pushSample1)))
+            .setConstantHeadingInterpolation(pushSample1.heading)
             .build()
 
-        action3PushSample1 = robot.follower.pathBuilder()
-            .addPath(
-                BezierLine(
-                    Point(beforeMovingSample3),
-                    Point(pushSample1)
-                )
-            )
-            .setConstantHeadingInterpolation(pushSample1.heading)
-
+        action3PushSample2 = robot.follower.pathBuilder()
             .addPath(
                 BezierCurve(
                     Point(pushSample1),
@@ -113,7 +106,6 @@ class SpecimenAuto : OpMode() {
                 )
             )
             .setLinearHeadingInterpolation(0.0, comeBackAround.heading)
-
             .addPath(
                 BezierCurve(
                     Point(comeBackAround),
@@ -124,18 +116,11 @@ class SpecimenAuto : OpMode() {
             )
             .setConstantHeadingInterpolation(lineUpForSample2.heading)
 
+            .addPath(BezierLine(Point(lineUpForSample2), Point(pushSample2InZone)))
+            .setConstantHeadingInterpolation(pushSample2InZone.heading)
             .build()
 
-        action4PushSample2 = robot.follower.pathBuilder()
-            .addPath(
-                BezierLine (
-                    Point(lineUpForSample2),
-                    Point(pushSample2InZone)
-                )
-            )
-            .build()
-
-        action5PickUpSpecimen1 = robot.follower.pathBuilder()
+        action4PickUpSpecimen1 = robot.follower.pathBuilder()
             .addPath(
                 BezierCurve(
                     Point(pushSample2InZone),
@@ -173,27 +158,20 @@ class SpecimenAuto : OpMode() {
                 robot.moveLiftToBottom()
                 if (!robot.follower.isBusy) {
                     robot.follower.setMaxPower(1.0)
-                    robot.follower.followPath(action3PushSample1, true)
+                    robot.follower.followPath(action3PushSample2, true)
                     pathState = 3
                 }
             }
 
             3 -> {
                 if (!robot.follower.isBusy) {
-                    robot.follower.setMaxPower(1.0)
-                    robot.follower.followPath(action4PushSample2, true)
-                }
-            }
-
-            4 -> {
-                if (!robot.follower.isBusy) {
                     robot.follower.setMaxPower(0.3)
-                    robot.follower.followPath(action5PickUpSpecimen1, true)
+                    robot.follower.followPath(action4PickUpSpecimen1, true)
                     pathState = 4
                 }
             }
 
-            5 -> {
+            4 -> {
                 if (!robot.follower.isBusy) {
                     pathState = -1
                 }
