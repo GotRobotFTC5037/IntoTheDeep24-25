@@ -46,11 +46,15 @@ class SpecimenAuto : OpMode() {
     private val pushSample2InZone = Pose(15.0, 16.0, Math.toRadians(270.0))
     private val pickUpWithSpecimen = Pose(18.0,9.0, Math.toRadians(270.0))
     private val pickUpWithSpecimenControlPoint1 = Pose(20.0,16.0)
+    private val deliverSpecimen1 = Pose(37.75,73.0, Math.toRadians(0.0))
+    private val deliverSpecimen1ControlPoint1 = Pose(18.0,73.0)
+
 
     private var action1ScorePreload: PathChain? = null
     private var action2AfterPreload: PathChain? = null
     private var action3PushSample2: PathChain? = null
     private var action4PickUpSpecimen1: PathChain? = null
+    private var action5DeliverSpecimen1: PathChain? = null
 
     fun buildPaths() {
         action1ScorePreload = robot.follower.pathBuilder()
@@ -63,7 +67,7 @@ class SpecimenAuto : OpMode() {
                 )
             )
             .setConstantHeadingInterpolation(scorePreload.heading)
-            .build()
+        .build()
 
 
 //        action2AfterPreload = robot.follower.pathBuilder()
@@ -95,7 +99,7 @@ class SpecimenAuto : OpMode() {
             .setConstantHeadingInterpolation(beforeMovingSample3.heading)
             .addPath(BezierLine(Point(beforeMovingSample3), Point(pushSample1)))
             .setConstantHeadingInterpolation(pushSample1.heading)
-            .build()
+        .build()
 
         action3PushSample2 = robot.follower.pathBuilder()
             .addPath(
@@ -118,7 +122,7 @@ class SpecimenAuto : OpMode() {
 
             .addPath(BezierLine(Point(lineUpForSample2), Point(pushSample2InZone)))
             .setConstantHeadingInterpolation(pushSample2InZone.heading)
-            .build()
+        .build()
 
         action4PickUpSpecimen1 = robot.follower.pathBuilder()
             .addPath(
@@ -129,20 +133,30 @@ class SpecimenAuto : OpMode() {
                 )
             )
             .setConstantHeadingInterpolation(pickUpWithSpecimen.heading)
-            .build()
+        .build()
 
+        action5DeliverSpecimen1 = robot.follower.pathBuilder()
+            .addPath(
+                BezierCurve(
+                    Point(pickUpWithSpecimen),
+                    Point(deliverSpecimen1ControlPoint1),
+                    Point(deliverSpecimen1)
+                )
+            )
+            .setLinearHeadingInterpolation(pickUpWithSpecimen.heading, deliverSpecimen1.heading)
+        .build()
     }
 
     fun autonomousPathUpdate() {
         when (pathState) {
             0 -> {
-                robot.follower.setMaxPower(0.5)
+                robot.follower.setMaxPower(0.55)
                 robot.follower.followPath(action1ScorePreload, true)
                 pathState = 1
             }
             1 -> {
                 if (robot.follower.isBusy) {
-                    robot.moveLiftToPosition(1400, 0.5)
+                    robot.moveLiftToPosition(robot.specimenDeliveryPosition, 0.6)
                 } else {
                     robot.moveLiftToBottom()
                     if (robot.deliveryBack.currentPosition < 600) {
@@ -165,6 +179,7 @@ class SpecimenAuto : OpMode() {
 
             3 -> {
                 if (!robot.follower.isBusy) {
+                    resetRuntime()
                     robot.follower.setMaxPower(0.3)
                     robot.follower.followPath(action4PickUpSpecimen1, true)
                     pathState = 4
@@ -172,10 +187,36 @@ class SpecimenAuto : OpMode() {
             }
 
             4 -> {
-                if (!robot.follower.isBusy) {
-                    pathState = -1
+                if (runtime > 1.2) {
+                    robot.specimenGripper.position = robot.specimenGripperClosed
+                }
+                if (runtime > 1.6) {
+                    robot.moveLiftToPosition(robot.specimenDeliveryPosition, 0.5)
+                }
+                if (robot.deliveryBack.currentPosition > 300) {
+                    robot.follower.setMaxPower(1.0)
+                    robot.follower.followPath(action5DeliverSpecimen1,true)
+                    pathState = 5
                 }
             }
+
+            5 -> {
+                if (robot.follower.pose.y > 60) {
+                    robot.follower.setMaxPower(0.6)
+                }
+                if (robot.follower.isBusy) {
+                    robot.moveLiftToPosition(robot.specimenDeliveryPosition, 0.5)
+                } else {
+                    robot.moveLiftToBottom()
+                    if (robot.deliveryBack.currentPosition < 600) {
+                        robot.specimenGripper.position = robot.specimenGripperOpen
+                        robot.follower.setMaxPower(1.0)
+               //         robot.follower.followPath(action2AfterPreload, true)
+                        pathState = -1
+                    }
+                }
+            }
+
 
 //            2 -> if (!robot.follower.isBusy) {
 //                robot.follower.setMaxPower(1.0)
@@ -221,7 +262,7 @@ class SpecimenAuto : OpMode() {
     override fun loop() {
         robot.follower.update()
         autonomousPathUpdate()
-
+        telemetry.addData("runtime", runtime)
         telemetry.addData("path state", pathState)
         telemetry.addData("x", robot.follower.pose.x)
         telemetry.addData("y", robot.follower.pose.y)
