@@ -43,18 +43,41 @@ class SpecimenAuto : OpMode() {
     private val lineUpForSample2 = Pose(55.0, 16.0, Math.toRadians(270.0))
     private val lineUpForSample2ControlPoint1 = Pose(60.0, 31.0, Math.toRadians(270.0))
     private val lineUpForSample2ControlPoint2 = Pose(60.0, 15.0, Math.toRadians(270.0))
-    private val pushSample2InZone = Pose(15.0, 16.0, Math.toRadians(270.0))
-    private val pickUpWithSpecimen = Pose(18.0,9.0, Math.toRadians(270.0))
-    private val pickUpWithSpecimenControlPoint1 = Pose(20.0,16.0)
+    private val pushSample2InZone = Pose(18.0, 16.0, Math.toRadians(270.0))
+    private val pickUpSpecimen = Pose(18.0,9.0, Math.toRadians(270.0))
+    private val lineUpForSpecimen1 = Pose(30.0, 73.0, Math.toRadians(0.0))
     private val deliverSpecimen1 = Pose(37.75,73.0, Math.toRadians(0.0))
-    private val deliverSpecimen1ControlPoint1 = Pose(18.0,73.0)
+    private val lineUpForGrab2 = Pose(18.0,73.0, Math.toRadians(270.0))
+    private val lineUpForSpecimen2 = Pose(30.0,77.0, Math.toRadians(0.0))
+    private val deliverSpecimen2 = Pose(37.75,77.0,Math.toRadians(0.0))
+    private val lineUpForGrab3 = Pose(18.0,77.0, Math.toRadians(270.0))
+    private val lineUpForSpecimen3 = Pose(30.0,81.0, Math.toRadians(0.0))
+    private val deliverSpecimen3 = Pose(37.75,81.0,Math.toRadians(0.0))
+    private val lineUpForGrab4 = Pose(18.0,81.0,Math.toRadians(270.0))
 
+    //    private val pickUpSpecimen3= Pose(18.0,9.0, Math.toRadians(270.0))
+//    private val deliverSpecimen3 = Pose(37.75,81.0, Math.toRadians(0.0))
+//    private val deliverSpecimen3ControlPoint1 = Pose(18.0,81.0)
+    private val park = Pose(18.0,15.0, Math.toRadians(0.0))
 
     private var action1ScorePreload: PathChain? = null
     private var action2AfterPreload: PathChain? = null
     private var action3PushSample2: PathChain? = null
     private var action4PickUpSpecimen1: PathChain? = null
-    private var action5DeliverSpecimen1: PathChain? = null
+    private var action5LineUpForSpecimen1: PathChain? = null
+    private var action6DeliverSpecimen1: PathChain? = null
+    private var action7LineUpForGrab2: PathChain? = null
+    private var action8GrabSpecimen2: PathChain? = null
+    private var action9LineUpForSpecimen2: PathChain? = null
+    private var action10DeliverSpecimen2: PathChain? = null
+    private var action11LineUpForGrab3: PathChain? = null
+    private var action12GrabSample3: PathChain? = null
+    private var action13LineUpForSpecimen3: PathChain? = null
+    private var action14DeliverSpecimen3: PathChain? = null
+    private var action15LineUpForGrab4: PathChain? = null
+    private var action16GrabSample4: PathChain? = null
+    private var action15Park: PathChain? = null
+
 
     fun buildPaths() {
         action1ScorePreload = robot.follower.pathBuilder()
@@ -126,31 +149,145 @@ class SpecimenAuto : OpMode() {
 
         action4PickUpSpecimen1 = robot.follower.pathBuilder()
             .addPath(
-                BezierCurve(
+                BezierLine(
                     Point(pushSample2InZone),
-                    Point(pickUpWithSpecimenControlPoint1),
-                    Point(pickUpWithSpecimen)
+                    Point(pickUpSpecimen)
                 )
             )
-            .setConstantHeadingInterpolation(pickUpWithSpecimen.heading)
+            .setConstantHeadingInterpolation(pickUpSpecimen.heading)
         .build()
 
-        action5DeliverSpecimen1 = robot.follower.pathBuilder()
+        action5LineUpForSpecimen1 = robot.follower.pathBuilder()
             .addPath(
-                BezierCurve(
-                    Point(pickUpWithSpecimen),
-                    Point(deliverSpecimen1ControlPoint1),
+                BezierLine(
+                    Point(pickUpSpecimen),
+                    Point(lineUpForSpecimen1)
+                )
+            )
+            .setLinearHeadingInterpolation(pickUpSpecimen.heading, lineUpForSpecimen1.heading)
+        .build()
+
+        action6DeliverSpecimen1 = robot.follower.pathBuilder()
+            .addPath(
+                BezierLine(
+                    Point(lineUpForSpecimen1),
                     Point(deliverSpecimen1)
                 )
             )
-            .setLinearHeadingInterpolation(pickUpWithSpecimen.heading, deliverSpecimen1.heading)
+            .setConstantHeadingInterpolation(deliverSpecimen1.heading)
+        .build()
+
+        action7LineUpForGrab2 = robot.follower.pathBuilder()
+            .addPath(
+                BezierLine(
+                    Point(deliverSpecimen1),
+                    Point(lineUpForGrab2)
+                )
+            )
+            .setLinearHeadingInterpolation(deliverSpecimen1.heading, lineUpForGrab2.heading)
+        .build()
+
+        action8GrabSpecimen2 = robot.follower.pathBuilder()
+            .addPath(
+                BezierLine(
+                    Point(lineUpForGrab2),
+                    Point(pickUpSpecimen)
+                )
+            )
+            .setConstantHeadingInterpolation(pickUpSpecimen.heading)
+        .build()
+
+        action9LineUpForSpecimen2 = robot.follower.pathBuilder()
+            .addPath(
+                BezierLine(
+                    Point(pickUpSpecimen),
+                    Point(lineUpForSpecimen2)
+                )
+            )
+            .setLinearHeadingInterpolation(pickUpSpecimen.heading, lineUpForSpecimen2.heading)
+        .build()
+
+        action10DeliverSpecimen2 = robot.follower.pathBuilder()
+            .addPath(
+                BezierLine(
+                    Point(lineUpForSpecimen2),
+                    Point(deliverSpecimen2)
+                )
+            )
+            .setConstantHeadingInterpolation(deliverSpecimen2.heading)
+        .build()
+
+
+        action11LineUpForGrab3 = robot.follower.pathBuilder()
+            .addPath(
+                BezierLine(
+                    Point(deliverSpecimen2),
+                    Point(lineUpForGrab3)
+                )
+            )
+            .setLinearHeadingInterpolation(deliverSpecimen2.heading, lineUpForGrab3.heading)
+        .build()
+
+
+        action12GrabSample3 = robot.follower.pathBuilder()
+            .addPath(
+                BezierLine(
+                    Point(lineUpForGrab3),
+                    Point(pickUpSpecimen)
+                )
+            )
+            .setConstantHeadingInterpolation(pickUpSpecimen.heading)
+        .build()
+
+
+        action13LineUpForSpecimen3 = robot.follower.pathBuilder()
+            .addPath(
+                BezierLine(
+                    Point(pickUpSpecimen),
+                    Point(lineUpForSpecimen3)
+                )
+            )
+            .setLinearHeadingInterpolation(pickUpSpecimen.heading, lineUpForSpecimen3.heading)
+        .build()
+
+        action14DeliverSpecimen3 = robot.follower.pathBuilder()
+            .addPath(
+                BezierLine(
+                    Point(lineUpForSpecimen3),
+                    Point(deliverSpecimen3)
+                )
+            )
+            .setConstantHeadingInterpolation(deliverSpecimen3.heading)
+        .build()
+
+        action15LineUpForGrab4 = robot.follower.pathBuilder()
+            .addPath(
+                BezierLine(
+                    Point(deliverSpecimen3),
+                    Point(lineUpForGrab4)
+                )
+            )
+            .setLinearHeadingInterpolation(deliverSpecimen3.heading, lineUpForGrab4.heading)
+        .build()
+
+        action16GrabSample4 = robot.follower.pathBuilder()
+            .addPath(
+                BezierLine(
+                    Point(lineUpForGrab4),
+                    Point(pickUpSpecimen)
+                )
+            )
+            .setConstantHeadingInterpolation(pickUpSpecimen.heading)
         .build()
     }
+
+
+
 
     fun autonomousPathUpdate() {
         when (pathState) {
             0 -> {
-                robot.follower.setMaxPower(0.55)
+                robot.follower.setMaxPower(0.7)
                 robot.follower.followPath(action1ScorePreload, true)
                 pathState = 1
             }
@@ -180,7 +317,7 @@ class SpecimenAuto : OpMode() {
             3 -> {
                 if (!robot.follower.isBusy) {
                     resetRuntime()
-                    robot.follower.setMaxPower(0.3)
+                    robot.follower.setMaxPower(0.5)
                     robot.follower.followPath(action4PickUpSpecimen1, true)
                     pathState = 4
                 }
@@ -195,15 +332,21 @@ class SpecimenAuto : OpMode() {
                 }
                 if (robot.deliveryBack.currentPosition > 300) {
                     robot.follower.setMaxPower(1.0)
-                    robot.follower.followPath(action5DeliverSpecimen1,true)
+                    robot.follower.followPath(action5LineUpForSpecimen1,true)
                     pathState = 5
                 }
             }
 
             5 -> {
-                if (robot.follower.pose.y > 60) {
-                    robot.follower.setMaxPower(0.6)
+                robot.moveLiftToPosition(robot.specimenDeliveryPosition, 0.6)
+                if (!robot.follower.isBusy) {
+                    robot.follower.setMaxPower(0.7)
+                    robot.follower.followPath(action6DeliverSpecimen1,true)
+                    pathState = 6
                 }
+            }
+
+            6 -> {
                 if (robot.follower.isBusy) {
                     robot.moveLiftToPosition(robot.specimenDeliveryPosition, 0.5)
                 } else {
@@ -211,12 +354,120 @@ class SpecimenAuto : OpMode() {
                     if (robot.deliveryBack.currentPosition < 600) {
                         robot.specimenGripper.position = robot.specimenGripperOpen
                         robot.follower.setMaxPower(1.0)
-               //         robot.follower.followPath(action2AfterPreload, true)
-                        pathState = -1
+                        robot.follower.followPath(action7LineUpForGrab2, true)
+                        pathState = 7
                     }
                 }
             }
 
+            7 -> {
+                robot.moveLiftToBottom()
+                if (!robot.follower.isBusy) {
+                    resetRuntime()
+                    robot.follower.setMaxPower(1.0)
+                    robot.follower.followPath(action8GrabSpecimen2, true)
+                    pathState = 8
+                }
+            }
+
+            8 -> {
+                if (runtime > 1.8) {
+                    robot.specimenGripper.position = robot.specimenGripperClosed
+                }
+                if (runtime > 2) {
+                    robot.moveLiftToPosition(robot.specimenDeliveryPosition, 0.5)
+                }
+                if (robot.deliveryBack.currentPosition > 300) {
+                    robot.follower.setMaxPower(1.0)
+                    robot.follower.followPath(action9LineUpForSpecimen2,true)
+                    pathState = 9
+                }
+            }
+
+            9 -> {
+                robot.moveLiftToPosition(robot.specimenDeliveryPosition, 0.5)
+                if (!robot.follower.isBusy) {
+                    robot.follower.setMaxPower(0.7)
+                    robot.follower.followPath(action10DeliverSpecimen2,true)
+                    pathState = 10
+                }
+            }
+
+            10 -> {
+                if (robot.follower.isBusy) {
+                    robot.moveLiftToPosition(robot.specimenDeliveryPosition, 0.5)
+                } else {
+                    robot.moveLiftToBottom()
+                    if (robot.deliveryBack.currentPosition < 600) {
+                        robot.specimenGripper.position = robot.specimenGripperOpen
+                        robot.follower.setMaxPower(1.0)
+                        robot.follower.followPath(action11LineUpForGrab3, true)
+                        pathState = 11
+                    }
+                }
+            }
+
+            11 -> {
+                robot.moveLiftToBottom()
+                if (!robot.follower.isBusy) {
+                    resetRuntime()
+                    robot.follower.setMaxPower(1.0)
+                    robot.follower.followPath(action12GrabSample3, true)
+                    pathState = 12
+                }
+            }
+
+            12 -> {
+                if (runtime > 1.8) {
+                    robot.specimenGripper.position = robot.specimenGripperClosed
+                }
+                if (runtime > 2) {
+                    robot.moveLiftToPosition(robot.specimenDeliveryPosition, 0.5)
+                }
+                if (robot.deliveryBack.currentPosition > 300) {
+                    robot.follower.setMaxPower(1.0)
+                    robot.follower.followPath(action13LineUpForSpecimen3,true)
+                    pathState = 13
+                }
+            }
+
+            13 -> {
+                robot.moveLiftToPosition(robot.specimenDeliveryPosition, 0.5)
+                if (!robot.follower.isBusy) {
+                    robot.follower.setMaxPower(0.7)
+                    robot.follower.followPath(action14DeliverSpecimen3,true)
+                    pathState = 14
+                }
+            }
+
+            14 -> {
+                if (robot.follower.isBusy) {
+                    robot.moveLiftToPosition(robot.specimenDeliveryPosition, 0.5)
+                } else {
+                    robot.moveLiftToBottom()
+                    if (robot.deliveryBack.currentPosition < 600) {
+                        robot.specimenGripper.position = robot.specimenGripperOpen
+                        robot.follower.setMaxPower(1.0)
+                        robot.follower.followPath(action15LineUpForGrab4, true)
+                        pathState = 15
+                    }
+                }
+            }
+
+            15 -> {
+                robot.moveLiftToBottom()
+                if (!robot.follower.isBusy) {
+                    robot.follower.setMaxPower(1.0)
+                    robot.follower.followPath(action16GrabSample4, true)
+                    pathState = 16
+                }
+            }
+
+            16 -> {
+                if (!robot.follower.isBusy) {
+                    pathState = -1
+                }
+            }
 
 //            2 -> if (!robot.follower.isBusy) {
 //                robot.follower.setMaxPower(1.0)

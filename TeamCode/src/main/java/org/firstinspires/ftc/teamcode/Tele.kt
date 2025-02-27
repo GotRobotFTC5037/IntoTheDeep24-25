@@ -343,6 +343,10 @@ class Tele() : OpMode() {
 //        telemetry.addData("runtime", runtime)
 
 //        telemetry.addData("Transfer color sensor", robot.transferDistanceSensor.red())
+        telemetry.addData("Left Odometry Wheel", robot.frontLeft.currentPosition)
+        telemetry.addData("Right Odometry Wheel", robot.frontRight.currentPosition)
+        telemetry.addData("Strafe Odometry Wheel", robot.backRight.currentPosition)
+
         telemetry.update()
     }
 }

@@ -36,7 +36,7 @@ class Robot(val hardwareMap: HardwareMap) {
             FollowerConstants.rightFrontMotorDirection = DcMotorSimple.Direction.REVERSE
             FollowerConstants.rightRearMotorDirection = DcMotorSimple.Direction.REVERSE
 
-            FollowerConstants.mass = 14.32
+            FollowerConstants.mass = 16.56
 
             FollowerConstants.xMovement = 49.336
             FollowerConstants.yMovement = 35.4184
@@ -44,7 +44,7 @@ class Robot(val hardwareMap: HardwareMap) {
             FollowerConstants.forwardZeroPowerAcceleration = -38.6004
             FollowerConstants.lateralZeroPowerAcceleration = -84.3702
 
-            FollowerConstants.translationalPIDFCoefficients.setCoefficients(0.2, 0.0, 0.0001, 0.0)
+            FollowerConstants.translationalPIDFCoefficients.setCoefficients(0.2, 0.0, 0.025, 0.0)
             FollowerConstants.useSecondaryTranslationalPID = false
             FollowerConstants.secondaryTranslationalPIDFCoefficients.setCoefficients(
                 0.1,
@@ -53,7 +53,7 @@ class Robot(val hardwareMap: HardwareMap) {
                 0.0
             ) // Not being used, @see useSecondaryTranslationalPID
 
-            FollowerConstants.headingPIDFCoefficients.setCoefficients(3.0, 0.0, 0.01, 0.0)
+            FollowerConstants.headingPIDFCoefficients.setCoefficients(3.0, 0.0, 0.04, 0.0)
             FollowerConstants.useSecondaryHeadingPID = false
             FollowerConstants.secondaryHeadingPIDFCoefficients.setCoefficients(
                 2.0,
@@ -62,7 +62,7 @@ class Robot(val hardwareMap: HardwareMap) {
                 0.0
             ) // Not being used, @see useSecondaryHeadingPID
 
-            FollowerConstants.drivePIDFCoefficients.setCoefficients(0.01, 0.0, 0.00008, 0.6, 0.0)
+            FollowerConstants.drivePIDFCoefficients.setCoefficients(0.01, 0.0, 0.000008, 0.6, 0.0)
             FollowerConstants.useSecondaryDrivePID = false
             FollowerConstants.secondaryDrivePIDFCoefficients.setCoefficients(
                 0.1,
@@ -73,9 +73,9 @@ class Robot(val hardwareMap: HardwareMap) {
             ) // Not being used, @see useSecondaryDrivePID
 
             FollowerConstants.zeroPowerAccelerationMultiplier = 4.0
-            FollowerConstants.centripetalScaling = 0.00052
+            FollowerConstants.centripetalScaling = 0.00008
 
-            FollowerConstants.pathEndTimeoutConstraint = 150.0
+            FollowerConstants.pathEndTimeoutConstraint = 300.0
             FollowerConstants.pathEndTValueConstraint = 0.995
             FollowerConstants.pathEndVelocityConstraint = 0.1
             FollowerConstants.pathEndTranslationalConstraint = 0.1
