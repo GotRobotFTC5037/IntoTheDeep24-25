@@ -85,12 +85,12 @@ class Robot(val hardwareMap: HardwareMap) {
 
     object RobotLocalizerConstants {
         init {
-            ThreeWheelConstants.forwardTicksToInches = 5.550756173558269E-4
-            ThreeWheelConstants.strafeTicksToInches = -0.0005588014227266739
+            ThreeWheelConstants.forwardTicksToInches = 0.00056050
+            ThreeWheelConstants.strafeTicksToInches = -0.00056208
             ThreeWheelConstants.turnTicksToInches = 0.0005589587
             ThreeWheelConstants.leftY = 6.109
             ThreeWheelConstants.rightY = -6.109
-            ThreeWheelConstants.strafeX = -6.391
+            ThreeWheelConstants.strafeX = 6.391
             ThreeWheelConstants.leftEncoder_HardwareMapName = "fl"
             ThreeWheelConstants.rightEncoder_HardwareMapName = "fr"
             ThreeWheelConstants.strafeEncoder_HardwareMapName = "br"
@@ -148,7 +148,7 @@ class Robot(val hardwareMap: HardwareMap) {
     val intakePivotMid = .25
 
     val intakeSlideMax = 1.0
-    val intakeSlideMid = .6
+    val intakeSlideMid = .55
     val intakeSlideMin = .37
 
     val intakeWristMid = 0.5
@@ -237,7 +237,7 @@ class Robot(val hardwareMap: HardwareMap) {
         }
     }
 
-    fun initializeInSpecimen() {
+    fun initializeInAuto() {
         intakeSlide.position = intakeSlideMin
         deliveryPivot.position = deliveryPivotHigh
         intakeWrist.position = intakeWristLeft
@@ -246,14 +246,5 @@ class Robot(val hardwareMap: HardwareMap) {
         specimenGripper.position = specimenGripperClosed
 
     }
-
-    fun initializeInBasket() {
-        intakeSlide.position = intakeSlideMin
-        deliveryPivot.position = deliveryPivotHigh
-        intakeWrist.position = intakeWristMid
-        deliveryGripper.position = deliveryGripperClosed
-        intakeGripper.position = intakeGripperClearance
-    }
-
 
 }
