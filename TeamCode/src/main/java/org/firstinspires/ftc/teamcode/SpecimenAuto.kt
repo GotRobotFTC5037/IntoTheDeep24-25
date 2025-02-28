@@ -526,7 +526,6 @@ class SpecimenAuto : OpMode() {
 
     override fun init() {
         robot = Robot(hardwareMap)
-        robot.initializeInAuto()
         pathTimer = Timer()
         opmodeTimer = Timer()
         sillyTimer = Timer()
@@ -543,6 +542,7 @@ class SpecimenAuto : OpMode() {
     override fun start() {
         sillyTimer!!.resetTimer()
         opmodeTimer!!.resetTimer()
+        robot.initializeInSpecimen()
         setPathState(0)
     }
 
