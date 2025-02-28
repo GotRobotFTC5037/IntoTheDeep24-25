@@ -94,7 +94,7 @@ class Tele() : OpMode() {
                     }
 
                     3 -> {
-                        if (runtime >= .4) {
+                        if (runtime >= .45) {
                             robot.intakeSlide.position = robot.intakeSlideMin
                             resetRuntime()
                             actionStage++
@@ -102,7 +102,7 @@ class Tele() : OpMode() {
                     }
 
                     4 -> {
-                        if (runtime >= .3) {
+                        if (runtime >= .35) {
                             robot.deliveryGripper.position = robot.deliveryGripperClosed
                             resetRuntime()
                             actionStage++
@@ -147,7 +147,7 @@ class Tele() : OpMode() {
                     }
 
                     3 -> {
-                        if (runtime >= .4) {
+                        if (runtime >= .45) {
                             robot.intakeSlide.position = robot.intakeSlideMin
                             resetRuntime()
                             actionStage++
@@ -155,7 +155,7 @@ class Tele() : OpMode() {
                     }
 
                     4 -> {
-                        if (runtime >= .3) {
+                        if (runtime >= .35) {
                             robot.deliveryGripper.position = robot.deliveryGripperClosed
                             resetRuntime()
                             actionStage++
