@@ -75,7 +75,7 @@ class Robot(val hardwareMap: HardwareMap) {
             FollowerConstants.zeroPowerAccelerationMultiplier = 4.0
             FollowerConstants.centripetalScaling = 0.00008
 
-            FollowerConstants.pathEndTimeoutConstraint = 300.0
+            FollowerConstants.pathEndTimeoutConstraint = 200.0
             FollowerConstants.pathEndTValueConstraint = 0.995
             FollowerConstants.pathEndVelocityConstraint = 0.1
             FollowerConstants.pathEndTranslationalConstraint = 0.1
@@ -150,10 +150,16 @@ class Robot(val hardwareMap: HardwareMap) {
     val intakeSlideMax = 1.0
     val intakeSlideMid = .6
     val intakeSlideMin = .37
+    val intakeSlideAutoLeft = 0.89
+    val intakeSlideAutoRight = 0.89
+    val intakeSlideAutoMid = 0.84
 
     val intakeWristMid = 0.5
     val intakeWristLeft = 0.13
     val intakeWristRight = 0.85
+    val intakeWristAutoLeft = 0.62
+    val intakeWristAutoRight = 0.41
+    val intakeWristAutoMid = 0.5
 
     init {
         frontLeft.direction = DcMotorSimple.Direction.REVERSE
@@ -254,6 +260,8 @@ class Robot(val hardwareMap: HardwareMap) {
         deliveryGripper.position = deliveryGripperClosed
         intakeGripper.position = intakeGripperNeutral
     }
+
+
 
 
 }

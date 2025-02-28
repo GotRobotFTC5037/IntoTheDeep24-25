@@ -15,7 +15,7 @@ class Tele() : OpMode() {
     private var dpadRightPressed: Boolean = false
     private var aPressed: Boolean = false
     private var wristAngle = 0.475
-    private var slidesAngle = 0.54
+    private var slidesAngle = 0.37
     private var sequenceRunning: Boolean = false
     private var actionStage = 0
     private var deliveryHeightGoal = 2500
@@ -102,7 +102,7 @@ class Tele() : OpMode() {
                     }
 
                     4 -> {
-                        if (runtime >= .35) {
+                        if (runtime >= .45) {
                             robot.deliveryGripper.position = robot.deliveryGripperClosed
                             resetRuntime()
                             actionStage++
@@ -155,7 +155,7 @@ class Tele() : OpMode() {
                     }
 
                     4 -> {
-                        if (runtime >= .35) {
+                        if (runtime >= .45) {
                             robot.deliveryGripper.position = robot.deliveryGripperClosed
                             resetRuntime()
                             actionStage++
@@ -343,9 +343,11 @@ class Tele() : OpMode() {
 //        telemetry.addData("runtime", runtime)
 
 //        telemetry.addData("Transfer color sensor", robot.transferDistanceSensor.red())
-        telemetry.addData("Left Odometry Wheel", robot.frontLeft.currentPosition)
-        telemetry.addData("Right Odometry Wheel", robot.frontRight.currentPosition)
-        telemetry.addData("Strafe Odometry Wheel", robot.backRight.currentPosition)
+                telemetry.addData("slides", slidesAngle)
+        telemetry.addData("wrist", wristAngle)
+
+
+
 
         telemetry.update()
     }
