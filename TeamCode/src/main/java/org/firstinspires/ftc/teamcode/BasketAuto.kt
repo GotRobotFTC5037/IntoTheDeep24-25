@@ -28,10 +28,10 @@ class BasketAuto : OpMode() {
 
     private val startPose = Pose(8.5, 9.0, Math.toRadians(90.0))
     private val leaveStartPose = Pose(15.0, 9.0, Math.toRadians(90.0))
-    private val scoreSample = Pose(14.5, 32.5, Math.toRadians(135.0))
+    private val scoreSample = Pose(15.3, 33.3, Math.toRadians(135.0))
     private val grabRightSample = Pose(20.0, 32.5, Math.toRadians(345.0))
     private val grabMidSample = Pose(20.0, 32.5, Math.toRadians(5.0))
-    private val grabLeftSample = Pose(20.0, 32.5, Math.toRadians(20.0))
+    private val grabLeftSample = Pose(20.0, 32.5, Math.toRadians(18.0))
 
 
     private var action1scorePreload: PathChain? = null
@@ -135,38 +135,23 @@ class BasketAuto : OpMode() {
     fun autonomousPathUpdate() {
         when (pathState) {
             0 -> {
-                robot.follower.setMaxPower(0.5)
+                robot.follower.setMaxPower(0.7)
                 robot.follower.followPath(action0moveFromWall, true)
                 pathState = 1
             }
 
             1 -> {
+                robot.moveLiftToPosition(robot.deliveryMaxHeight, 0.5)
                 if (!robot.follower.isBusy) {
-                    robot.follower.setMaxPower(0.5)
                     robot.follower.followPath(action1scorePreload, true)
                     pathState = 2
                 }
             }
 
             2 -> {
-                if (!robot.follower.isBusy) {
-                    pathState = -1
-                }
-            }
-
-            1 -> {
                 robot.moveLiftToPosition(robot.deliveryMaxHeight, 0.5)
                 if (!robot.follower.isBusy && robot.deliveryBack.currentPosition > 2450) {
                     robot.deliveryPivot.position = robot.deliveryPivotMedium
-                    resetRuntime()
-                    pathState = 2
-                }
-            }
-
-            2 -> {
-                robot.moveLiftToPosition(robot.deliveryMaxHeight, 0.5)
-                if(runtime > 0.5) {
-                    robot.deliveryGripper.position = robot.deliveryGripperOpen
                     resetRuntime()
                     pathState = 3
                 }
@@ -174,8 +159,8 @@ class BasketAuto : OpMode() {
 
             3 -> {
                 robot.moveLiftToPosition(robot.deliveryMaxHeight, 0.5)
-                if(runtime > 0.3) {
-                    robot.deliveryPivot.position = robot.deliveryPivotHigh
+                if(runtime > 0.5) {
+                    robot.deliveryGripper.position = robot.deliveryGripperOpen
                     resetRuntime()
                     pathState = 4
                 }
@@ -183,7 +168,24 @@ class BasketAuto : OpMode() {
 
             4 -> {
                 robot.moveLiftToPosition(robot.deliveryMaxHeight, 0.5)
+                if(runtime > 0.3) {
+                    robot.deliveryPivot.position = robot.deliveryPivotHigh
+                    resetRuntime()
+                    pathState = 5
+                }
+            }
+
+            5 -> {
+                robot.moveLiftToPosition(robot.deliveryMaxHeight, 0.5)
                 if (runtime > 0.5) {
+                    robot.follower.followPath(action2GrabLeft, true)
+                    pathState = 6
+                }
+            }
+
+            6 -> {
+                robot.moveLiftToBottom()
+                if (!robot.follower.isBusy) {
 
                 }
             }
