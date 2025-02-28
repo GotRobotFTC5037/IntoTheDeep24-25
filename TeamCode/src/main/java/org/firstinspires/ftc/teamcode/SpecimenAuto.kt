@@ -38,13 +38,13 @@ class SpecimenAuto : OpMode() {
     private val beforeMovingSample3ControlPoint1 = Pose(60.0, 33.0)
     private val beforeMovingSample3ControlPoint2 = Pose(60.0, 27.0)
     private val pushSample1 = Pose(15.0, 27.0, Math.toRadians(0.0))
-    private val comeBackAround = Pose(55.0, 30.0, Math.toRadians(270.0))
-    private val comeBackAroundControlPoint1 = Pose(30.0, 30.0, Math.toRadians(270.0))
-    private val lineUpForSample2 = Pose(55.0, 16.0, Math.toRadians(270.0))
-    private val lineUpForSample2ControlPoint1 = Pose(60.0, 31.0, Math.toRadians(270.0))
-    private val lineUpForSample2ControlPoint2 = Pose(60.0, 15.0, Math.toRadians(270.0))
-    private val pushSample2InZone = Pose(18.0, 16.0, Math.toRadians(270.0))
-    private val pickUpSpecimen = Pose(18.0,9.0, Math.toRadians(270.0))
+//    private val comeBackAround = Pose(55.0, 30.0, Math.toRadians(270.0))
+//    private val comeBackAroundControlPoint1 = Pose(30.0, 30.0, Math.toRadians(270.0))
+//    private val lineUpForSample2 = Pose(55.0, 16.0, Math.toRadians(270.0))
+//    private val lineUpForSample2ControlPoint1 = Pose(60.0, 31.0, Math.toRadians(270.0))
+//    private val lineUpForSample2ControlPoint2 = Pose(60.0, 15.0, Math.toRadians(270.0))
+    private val pushSample2InZone = Pose(17.5, 16.0, Math.toRadians(270.0))
+    private val pickUpSpecimen = Pose(17.5,8.5, Math.toRadians(270.0))
     private val lineUpForSpecimen1 = Pose(30.0, 73.0, Math.toRadians(0.0))
     private val deliverSpecimen1 = Pose(37.75,73.0, Math.toRadians(0.0))
     private val lineUpForGrab2 = Pose(18.0,73.0, Math.toRadians(270.0))
@@ -58,15 +58,17 @@ class SpecimenAuto : OpMode() {
     //    private val pickUpSpecimen3= Pose(18.0,9.0, Math.toRadians(270.0))
 //    private val deliverSpecimen3 = Pose(37.75,81.0, Math.toRadians(0.0))
 //    private val deliverSpecimen3ControlPoint1 = Pose(18.0,81.0)
-    private val park = Pose(18.0,15.0, Math.toRadians(0.0))
+    private val park = Pose(18.0,15.0, Math.toRadians(270.0))
 
     private var action1ScorePreload: PathChain? = null
     private var action2AfterPreload: PathChain? = null
-    private var action3PushSample2: PathChain? = null
+    private var action3PushToGrab: PathChain? = null
+//    private var action3PushSample2: PathChain? = null
     private var action4PickUpSpecimen1: PathChain? = null
     private var action5LineUpForSpecimen1: PathChain? = null
     private var action6DeliverSpecimen1: PathChain? = null
     private var action7LineUpForGrab2: PathChain? = null
+    private var actionBeforeGrab2: PathChain? = null
     private var action8GrabSpecimen2: PathChain? = null
     private var action9LineUpForSpecimen2: PathChain? = null
     private var action10DeliverSpecimen2: PathChain? = null
@@ -125,27 +127,37 @@ class SpecimenAuto : OpMode() {
             .setConstantHeadingInterpolation(pushSample1.heading)
         .build()
 
-        action3PushSample2 = robot.follower.pathBuilder()
-            .addPath(
-                BezierCurve(
-                    Point(pushSample1),
-                    Point(comeBackAroundControlPoint1),
-                    Point(comeBackAround)
-                )
-            )
-            .setLinearHeadingInterpolation(0.0, comeBackAround.heading)
-            .addPath(
-                BezierCurve(
-                    Point(comeBackAround),
-                    Point(lineUpForSample2ControlPoint1),
-                    Point(lineUpForSample2ControlPoint2),
-                    Point(lineUpForSample2)
-                )
-            )
-            .setConstantHeadingInterpolation(lineUpForSample2.heading)
+//        action3PushSample2 = robot.follower.pathBuilder()
+//            .addPath(
+//                BezierCurve(
+//                    Point(pushSample1),
+//                    Point(comeBackAroundControlPoint1),
+//                    Point(comeBackAround)
+//                )
+//            )
+//            .setLinearHeadingInterpolation(0.0, comeBackAround.heading)
+//            .addPath(
+//                BezierCurve(
+//                    Point(comeBackAround),
+//                    Point(lineUpForSample2ControlPoint1),
+//                    Point(lineUpForSample2ControlPoint2),
+//                    Point(lineUpForSample2)
+//                )
+//            )
+//            .setConstantHeadingInterpolation(lineUpForSample2.heading)
+//
+//            .addPath(BezierLine(Point(lineUpForSample2), Point(pushSample2InZone)))
+//            .setConstantHeadingInterpolation(pushSample2InZone.heading)
+//        .build()
 
-            .addPath(BezierLine(Point(lineUpForSample2), Point(pushSample2InZone)))
-            .setConstantHeadingInterpolation(pushSample2InZone.heading)
+        action3PushToGrab = robot.follower.pathBuilder()
+            .addPath(
+                BezierLine(
+                    Point(pushSample1),
+                    Point(pushSample2InZone)
+                )
+            )
+            .setLinearHeadingInterpolation(pushSample1.heading, pushSample2InZone.heading)
         .build()
 
         action4PickUpSpecimen1 = robot.follower.pathBuilder()
@@ -188,15 +200,26 @@ class SpecimenAuto : OpMode() {
             .setLinearHeadingInterpolation(deliverSpecimen1.heading, lineUpForGrab2.heading)
         .build()
 
-        action8GrabSpecimen2 = robot.follower.pathBuilder()
+        actionBeforeGrab2 = robot.follower.pathBuilder()
             .addPath(
                 BezierLine(
                     Point(lineUpForGrab2),
+                    Point(pushSample2InZone)
+                )
+            )
+            .setConstantHeadingInterpolation(pickUpSpecimen.heading)
+            .build()
+
+        action8GrabSpecimen2 = robot.follower.pathBuilder()
+            .addPath(
+                BezierLine(
+                    Point(pushSample2InZone),
                     Point(pickUpSpecimen)
                 )
             )
             .setConstantHeadingInterpolation(pickUpSpecimen.heading)
         .build()
+
 
         action9LineUpForSpecimen2 = robot.follower.pathBuilder()
             .addPath(
@@ -299,8 +322,8 @@ class SpecimenAuto : OpMode() {
             2 -> {
                 robot.moveLiftToBottom()
                 if (!robot.follower.isBusy) {
-                    robot.follower.setMaxPower(1.0)
-                    robot.follower.followPath(action3PushSample2, true)
+                    robot.follower.setMaxPower(0.7)
+                    robot.follower.followPath(action3PushToGrab, true)
                     pathState = 3
                 }
             }
@@ -354,37 +377,45 @@ class SpecimenAuto : OpMode() {
             7 -> {
                 robot.moveLiftToBottom()
                 if (!robot.follower.isBusy) {
-                    resetRuntime()
                     robot.follower.setMaxPower(1.0)
-                    robot.follower.followPath(action8GrabSpecimen2, true)
+                    robot.follower.followPath(actionBeforeGrab2, true)
                     pathState = 8
                 }
             }
 
             8 -> {
-                if (runtime > 1.8) {
-                    robot.specimenGripper.position = robot.specimenGripperClosed
-                }
-                if (runtime > 2) {
-                    robot.moveLiftToPosition(robot.specimenDeliveryPosition, 0.5)
-                }
-                if (robot.deliveryBack.currentPosition > 300) {
-                    robot.follower.setMaxPower(1.0)
-                    robot.follower.followPath(action9LineUpForSpecimen2,true)
+                if (!robot.follower.isBusy) {
+                    resetRuntime()
+                    robot.follower.setMaxPower(0.5)
+                    robot.follower.followPath(action8GrabSpecimen2)
                     pathState = 9
                 }
             }
 
             9 -> {
-                robot.moveLiftToPosition(robot.specimenDeliveryPosition, 0.5)
-                if (!robot.follower.isBusy) {
-                    robot.follower.setMaxPower(0.7)
-                    robot.follower.followPath(action10DeliverSpecimen2,true)
+                if (runtime > 1) {
+                    robot.specimenGripper.position = robot.specimenGripperClosed
+                }
+                if (runtime > 1.5) {
+                    robot.moveLiftToPosition(robot.specimenDeliveryPosition, 0.5)
+                }
+                if (robot.deliveryBack.currentPosition > 300) {
+                    robot.follower.setMaxPower(1.0)
+                    robot.follower.followPath(action9LineUpForSpecimen2,true)
                     pathState = 10
                 }
             }
 
             10 -> {
+                robot.moveLiftToPosition(robot.specimenDeliveryPosition, 0.5)
+                if (!robot.follower.isBusy) {
+                    robot.follower.setMaxPower(0.7)
+                    robot.follower.followPath(action10DeliverSpecimen2,true)
+                    pathState = 11
+                }
+            }
+
+            12 -> {
                 if (robot.follower.isBusy) {
                     robot.moveLiftToPosition(robot.specimenDeliveryPosition, 0.5)
                 } else {
@@ -393,22 +424,22 @@ class SpecimenAuto : OpMode() {
                         robot.specimenGripper.position = robot.specimenGripperOpen
                         robot.follower.setMaxPower(1.0)
                         robot.follower.followPath(action11LineUpForGrab3, true)
-                        pathState = 11
+                        pathState = 13
                     }
                 }
             }
 
-            11 -> {
+            13 -> {
                 robot.moveLiftToBottom()
                 if (!robot.follower.isBusy) {
                     resetRuntime()
                     robot.follower.setMaxPower(1.0)
-                    robot.follower.followPath(action12GrabSample3, true)
-                    pathState = 12
+                    robot.follower.followPath(action12Park, true)
+                    pathState = 14
                 }
             }
 
-            13 -> {
+            14 -> {
 
             }
 
@@ -514,6 +545,8 @@ class SpecimenAuto : OpMode() {
         telemetry.addData("y", robot.follower.pose.y)
         telemetry.addData("heading", robot.follower.pose.heading)
         telemetry.addData("lift", robot.deliveryBack.currentPosition)
+        telemetry.addData("power", robot.deliveryBack.power)
+
         telemetry.update()
         robot.follower.drawOnDashBoard()
     }
