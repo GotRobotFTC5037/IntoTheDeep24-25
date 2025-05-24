@@ -1,5 +1,11 @@
 package org.firstinspires.ftc.teamcode
 
+import com.pedropathing.follower.Follower
+import com.pedropathing.follower.FollowerConstants
+import com.pedropathing.localization.Encoder
+import com.pedropathing.localization.Localizers
+import com.pedropathing.localization.constants.ThreeWheelConstants
+import com.pedropathing.util.Constants
 import com.qualcomm.robotcore.hardware.AnalogInput
 import com.qualcomm.robotcore.hardware.ColorRangeSensor
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -7,85 +13,153 @@ import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.DistanceSensor
 import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.PIDCoefficients
+import com.qualcomm.robotcore.hardware.PIDFCoefficients
 import com.qualcomm.robotcore.hardware.Servo
-import org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry
 import kotlin.math.abs
 import kotlin.math.max
 
 
 class Robot(val hardwareMap: HardwareMap) {
 
+    object RobotFollowerConstants {
+        init {
+            FollowerConstants.localizers = Localizers.THREE_WHEEL
+
+            FollowerConstants.leftFrontMotorName = "fl"
+            FollowerConstants.leftRearMotorName = "bl"
+            FollowerConstants.rightFrontMotorName = "fr"
+            FollowerConstants.rightRearMotorName = "br"
+
+            FollowerConstants.leftFrontMotorDirection = DcMotorSimple.Direction.REVERSE
+            FollowerConstants.leftRearMotorDirection = DcMotorSimple.Direction.FORWARD
+            FollowerConstants.rightFrontMotorDirection = DcMotorSimple.Direction.REVERSE
+            FollowerConstants.rightRearMotorDirection = DcMotorSimple.Direction.REVERSE
+
+            FollowerConstants.mass = 16.56
+
+            FollowerConstants.xMovement = 49.336
+            FollowerConstants.yMovement = 35.4184
+
+            FollowerConstants.forwardZeroPowerAcceleration = -38.6004
+            FollowerConstants.lateralZeroPowerAcceleration = -84.3702
+
+            FollowerConstants.translationalPIDFCoefficients.setCoefficients(0.2, 0.0, 0.025, 0.0)
+            FollowerConstants.useSecondaryTranslationalPID = false
+            FollowerConstants.secondaryTranslationalPIDFCoefficients.setCoefficients(
+                0.1,
+                0.0,
+                0.01,
+                0.0
+            ) // Not being used, @see useSecondaryTranslationalPID
+
+            FollowerConstants.headingPIDFCoefficients.setCoefficients(3.0, 0.0, 0.04, 0.0)
+            FollowerConstants.useSecondaryHeadingPID = false
+            FollowerConstants.secondaryHeadingPIDFCoefficients.setCoefficients(
+                2.0,
+                0.0,
+                0.1,
+                0.0
+            ) // Not being used, @see useSecondaryHeadingPID
+
+            FollowerConstants.drivePIDFCoefficients.setCoefficients(0.01, 0.0, 0.000008, 0.6, 0.0)
+            FollowerConstants.useSecondaryDrivePID = false
+            FollowerConstants.secondaryDrivePIDFCoefficients.setCoefficients(
+                0.1,
+                0.0,
+                0.0,
+                0.6,
+                0.0
+            ) // Not being used, @see useSecondaryDrivePID
+
+            FollowerConstants.zeroPowerAccelerationMultiplier = 4.0
+            FollowerConstants.centripetalScaling = 0.00008
+
+            FollowerConstants.pathEndTimeoutConstraint = 200.0
+            FollowerConstants.pathEndTValueConstraint = 0.995
+            FollowerConstants.pathEndVelocityConstraint = 0.1
+            FollowerConstants.pathEndTranslationalConstraint = 0.1
+            FollowerConstants.pathEndHeadingConstraint = 0.007
+        }
+    }
+
+    object RobotLocalizerConstants {
+        init {
+            ThreeWheelConstants.forwardTicksToInches = 5.550756173558269E-4
+            ThreeWheelConstants.strafeTicksToInches = -0.0005588014227266739
+            ThreeWheelConstants.turnTicksToInches = 0.0005589587
+            ThreeWheelConstants.leftY = 6.109
+            ThreeWheelConstants.rightY = -6.109
+            ThreeWheelConstants.strafeX = 6.391
+            ThreeWheelConstants.leftEncoder_HardwareMapName = "fl"
+            ThreeWheelConstants.rightEncoder_HardwareMapName = "fr"
+            ThreeWheelConstants.strafeEncoder_HardwareMapName = "br"
+            ThreeWheelConstants.leftEncoderDirection = Encoder.REVERSE
+            ThreeWheelConstants.rightEncoderDirection = Encoder.FORWARD
+            ThreeWheelConstants.strafeEncoderDirection = Encoder.REVERSE
+        }
+    }
+
     // Drive Motors
-    public val frontLeft: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "fl")
-    public val backLeft: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "bl")
-    public val frontRight: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "fr")
-    public val backRight: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "br")
+    val frontLeft: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "fl")
+    val backLeft: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "bl")
+    val frontRight: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "fr")
+    val backRight: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "br")
 
     // Other Motors
-    public val deliveryFront: DcMotor = hardwareMap.get(DcMotor::class.java, "delivery_front")
-    public val deliveryBack: DcMotor = hardwareMap.get(DcMotor::class.java, "delivery_back")
-//    private val winch1: DcMotor = hardwareMap.get(DcMotor::class.java, "winch1")
-//    private val winch2: DcMotor = hardwareMap.get(DcMotor::class.java, "winch2")
+    val deliveryFront: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "delivery_front")
+    val deliveryBack: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "delivery_back")
 
     // Servos
-    public val intakeSlide: Servo = hardwareMap.get(Servo::class.java, "intake_slide")
-    public val intakePivot: Servo = hardwareMap.get(Servo::class.java, "intake_pivot")
-    public val intakeWrist: Servo = hardwareMap.get(Servo::class.java, "intake_wrist")
-    public val intakeGripper: Servo = hardwareMap.get(Servo::class.java, "intake_gripper")
-    public val deliveryPivot: Servo = hardwareMap.get(Servo::class.java, "delivery_pivot")
-    public val deliveryGripper: Servo = hardwareMap.get(Servo::class.java, "delivery_gripper")
-    public val specimenGripper: Servo = hardwareMap.get(Servo::class.java, "specimen_gripper")
-//    public val winchServo: Servo = hardwareMap.get(Servo::class.java, "winch_servo")
+    val intakeSlide: Servo = hardwareMap.get(Servo::class.java, "intake_slide")
+    val intakePivot: Servo = hardwareMap.get(Servo::class.java, "intake_pivot")
+    val intakeWrist: Servo = hardwareMap.get(Servo::class.java, "intake_wrist")
+    val intakeGripper: Servo = hardwareMap.get(Servo::class.java, "intake_gripper")
+    val deliveryPivot: Servo = hardwareMap.get(Servo::class.java, "delivery_pivot")
+    val deliveryGripper: Servo = hardwareMap.get(Servo::class.java, "delivery_gripper")
+    val specimenGripper: Servo = hardwareMap.get(Servo::class.java, "specimen_gripper")
 
     // Limit Switches
-    public val deliveryLiftDownSwitch: AnalogInput = hardwareMap.get(AnalogInput::class.java, "delivery_lift_down")
+    val deliveryLiftDownSwitch: AnalogInput = hardwareMap.get(AnalogInput::class.java, "delivery_lift_down")
     // Sensors
-    public val specimenDistanceSensor: DistanceSensor = hardwareMap.get(DistanceSensor::class.java,"specimen_sensor")
-    public val transferDistanceSensor: ColorRangeSensor = hardwareMap.get(ColorRangeSensor::class.java, "transfer_sensor")
+    val specimenDistanceSensor: DistanceSensor = hardwareMap.get(DistanceSensor::class.java,"specimen_sensor")
 
     // Servo Positions
-    public val deliveryGripperOpen = 0.2
-    public val deliveryGripperClosed = 0.0
-    public val deliveryPivotLow = 0.28
-    public val deliveryPivotMedium = 0.62
-    public val deliveryPivotHigh = 0.95
+    val deliveryGripperOpen = 0.2
+    val deliveryGripperClosed = 0.0
+    val deliveryPivotLow = 0.93
+    val deliveryPivotMedium = 0.55
+    val deliveryPivotHigh = 0.2
 
-    public val specimenDeliveryPosition = 1300
-    public val deliveryMaxHeight = 2500
+    val specimenDeliveryPosition = 1400
+    val deliveryMaxHeight = 2500
 
-    public val specimenGripperOpen = 0.95
-    public val specimenGripperClosed = 0.4
+    val specimenGripperOpen = 0.95
+    val specimenGripperClosed = 0.4
 
-    public val intakeGripperNeutral = 0.26
-    public val intakeGripperClosedSides = 0.7
-    public val intakeGripperClosedTop = 0.0
-    public val intakeGripperClosedLoose = 0.66
-    public val intakeGripperClearance = .58
+    val intakeGripperNeutral = 0.26
+    val intakeGripperClosedSides = 0.7
+    val intakeGripperClosedTop = 0.0
+    val intakeGripperClosedLoose = 0.66
+    val intakeGripperClearance = .58
 
-    public val intakePivotDown = .675
-    public val intakePivotUp = 0.0
-    public val intakePivotMid = .25
+    val intakePivotDown = .675
+    val intakePivotUp = 0.0
+    val intakePivotMid = .25
 
-    public val intakeSlideMax = 0.0
-    public val intakeSlideMid = .4
-    public val intakeSlideMin = .54
+    val intakeSlideMax = 1.0
+    val intakeSlideMid = .6
+    val intakeSlideMin = .37
+    val intakeSlideAutoLeft = 0.89
+    val intakeSlideAutoRight = 0.89
+    val intakeSlideAutoMid = 0.84
 
-    public val intakeWristMid = 0.475
-    public val intakeWristLeft = 0.8
-    public val intakeWristRight = 0.15
-
-    var inPerTick: Double = 0.00110697703 * 903.361111296
-
-
-
-    // Roadrunner
-//    val roadrunnerMecanumDrive: MecanumDrive
-//    private val voltageSensor: VoltageSensor = hardwareMap.get(VoltageSensor::class.java,"Control Hub")
-//    private val lazyImu: LazyImu = hardwareMap.get(LazyImu::class.java,"imu")
-//    private val par0: OverflowEncoder = hardwareMap.get(OverflowEncoder::class.java, "par0")
-//    private val par1: OverflowEncoder = hardwareMap.get(OverflowEncoder::class.java, "par1")
-//    private val perp: OverflowEncoder = hardwareMap.get(OverflowEncoder::class.java, "perp")
-//    private val pose: Pose2d = hardwareMap.get(Pose2d::class.java, "pose")
+    val intakeWristMid = 0.5
+    val intakeWristLeft = 0.13
+    val intakeWristRight = 0.85
+    val intakeWristAutoLeft = 0.62
+    val intakeWristAutoRight = 0.41
+    val intakeWristAutoMid = 0.5
 
     init {
         frontLeft.direction = DcMotorSimple.Direction.REVERSE
@@ -104,20 +178,16 @@ class Robot(val hardwareMap: HardwareMap) {
         deliveryFront.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         deliveryBack.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
-//        frontLeft.mode = DcMotor.RunMode.RUN_USING_ENCODER
-//        backLeft.mode = DcMotor.RunMode.RUN_USING_ENCODER
-//        frontRight.mode = DcMotor.RunMode.RUN_USING_ENCODER
-//        backRight.mode = DcMotor.RunMode.RUN_USING_ENCODER
-
         deliveryFront.mode = DcMotor.RunMode.RUN_USING_ENCODER
         deliveryBack.mode = DcMotor.RunMode.RUN_USING_ENCODER
 
-//        deliveryBack.mode = DcMotor.RunMode.RUN_TO_POSITION
-//        roadrunnerMecanumDrive = MecanumDrive(frontLeft,backLeft,backRight,frontRight,lazyImu,voltageSensor,par1,par0,perp,pose)
+        val pidNew = PIDFCoefficients(0.0007, 0.0, 0.0, 0.0)
+        deliveryBack.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidNew)
 
-//        stars.direction = Servo.Direction.FORWARD
-
+        Constants.setConstants(RobotFollowerConstants::class.java, RobotLocalizerConstants::class.java)
     }
+
+    val follower = Follower(hardwareMap)
 
     /**
      * X: Strafing left (-X) / right (+X)
@@ -152,124 +222,46 @@ class Robot(val hardwareMap: HardwareMap) {
 
     }
 
-    fun moveDiagonally(
-        power: Double,
-        timeMs: Long,
-        direction: String
-    ) {
-        val clippedPower = power.coerceIn(-1.0, 1.0)
-
-        // Set motor powers for diagonal movement
-        when (direction.lowercase()) {
-            "forward_left" -> {
-                frontLeft.power = 0.0
-                frontRight.power = clippedPower
-                backLeft.power = clippedPower
-                backRight.power = 0.0
-            }
-            "forward_right" -> {
-                frontLeft.power = clippedPower
-                frontRight.power = 0.0
-                backLeft.power = 0.0
-                backRight.power = clippedPower
-            }
-            "backward_left" -> {
-                frontLeft.power = -clippedPower
-                frontRight.power = 0.0
-                backLeft.power = 0.0
-                backRight.power = -clippedPower
-            }
-            "backward_right" -> {
-                frontLeft.power = 0.0
-                frontRight.power = -clippedPower
-                backLeft.power = -clippedPower
-                backRight.power = 0.0
-            }
-            else -> {
-                println("Invalid direction. Use 'forward_left', 'forward_right', 'backward_left', or 'backward_right'.")
-                return
-            }
-        }
-
-        val startTime = System.currentTimeMillis()
-        while (System.currentTimeMillis() - startTime < timeMs) {
-            frontLeft.power += 0
-            frontRight.power -= 0
-            backLeft.power += 0
-            backRight.power -= 0
-        }
-
-        // Stop motors after the time has elapsed
-        frontLeft.power = 0.0
-        frontRight.power = 0.0
-        backLeft.power = 0.0
-        backRight.power = 0.0
-    }
-
-    fun turnRobot(power: Double, timeMs: Long) {
-        // Set opposite power to turn
-        frontLeft.power = power
-        backLeft.power = power
-        frontRight.power = -power
-        backRight.power = -power // Opposite direction for turning
-
-       Thread.sleep(timeMs) // Wait for the turn to complete
-
-        // Stop motors after turning
-        frontLeft.power = 0.0
-        backLeft.power = 0.0
-        frontRight.power = 0.0
-        backRight.power = 0.0
-    }
-
     fun moveLiftToPosition(targetPosition: Int, power: Double) {
 
-        deliveryBack.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-
-        while (deliveryBack.currentPosition <= targetPosition) {
+        if(targetPosition > deliveryBack.currentPosition) {
             deliveryBack.power = -power
             deliveryFront.power = -power
+        } else {
+            deliveryBack.power = 0.0
+            deliveryFront.power = 0.0
         }
-        deliveryBack.power = 0.0
-        deliveryFront.power = 0.0
+    }
+
+    fun  moveLiftToBottom() {
+        if(deliveryBack.currentPosition > 300) {
+            deliveryBack.power = 0.4
+            deliveryFront.power = 0.4
+        } else  {
+            deliveryFront.power = 0.0
+            deliveryBack.power = 0.0
+        }
+    }
+
+    fun initializeInSpecimen() {
+        intakeSlide.position = intakeSlideMin
+        deliveryPivot.position = deliveryPivotHigh
+        intakeWrist.position = intakeWristLeft
+        deliveryGripper.position = deliveryGripperClosed
+        intakeGripper.position = intakeGripperNeutral
+        specimenGripper.position = specimenGripperClosed
 
     }
 
-    fun moveForward(x: Double, y: Double, yaw: Double, inches: Double) {
-        var leftFrontPower = y + x - yaw
-        var rightFrontPower = y - x + yaw
-        var leftBackPower = y - x - yaw
-        var rightBackPower = y + x + yaw
-
-        // Normalize wheel powers to be less than 1.0
-        var max = max(abs(leftFrontPower), abs(rightFrontPower))
-        max = max(max, abs(leftBackPower))
-        max = max(max, abs(rightBackPower))
-
-        if (max > 1.0) {
-            leftFrontPower /= max
-            rightFrontPower /= max
-            leftBackPower /= max
-            rightBackPower /= max
-        }
-
-        if (frontLeft.currentPosition > inches){
-            frontLeft.power = 0.0
-            frontRight.power = 0.0
-            backLeft.power = 0.0
-            backRight.power = 0.0
-
-        }
-        inches * inPerTick
-
-        // Send powers to the wheels.
-        frontLeft.power = leftFrontPower
-        frontRight.power = rightFrontPower
-        backLeft.power = leftBackPower
-        backRight.power = rightBackPower
-
-
+    fun initializeInBasket() {
+        intakeSlide.position = intakeSlideMin
+        deliveryPivot.position = deliveryPivotHigh
+        intakeWrist.position = intakeWristLeft
+        deliveryGripper.position = deliveryGripperClosed
+        intakeGripper.position = intakeGripperNeutral
     }
+
+
 
 
 }

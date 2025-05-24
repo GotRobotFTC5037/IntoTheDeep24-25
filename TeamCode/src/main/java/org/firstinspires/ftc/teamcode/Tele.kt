@@ -94,7 +94,7 @@ class Tele() : OpMode() {
                     }
 
                     3 -> {
-                        if (runtime >= .4) {
+                        if (runtime >= .45) {
                             robot.intakeSlide.position = robot.intakeSlideMin
                             resetRuntime()
                             actionStage++
@@ -102,7 +102,7 @@ class Tele() : OpMode() {
                     }
 
                     4 -> {
-                        if (runtime >= .4) {
+                        if (runtime >= .45) {
                             robot.deliveryGripper.position = robot.deliveryGripperClosed
                             resetRuntime()
                             actionStage++
@@ -147,7 +147,7 @@ class Tele() : OpMode() {
                     }
 
                     3 -> {
-                        if (runtime >= .4) {
+                        if (runtime >= .45) {
                             robot.intakeSlide.position = robot.intakeSlideMin
                             resetRuntime()
                             actionStage++
@@ -155,7 +155,7 @@ class Tele() : OpMode() {
                     }
 
                     4 -> {
-                        if (runtime >= .4) {
+                        if (runtime >= .45) {
                             robot.deliveryGripper.position = robot.deliveryGripperClosed
                             resetRuntime()
                             actionStage++
@@ -286,9 +286,9 @@ class Tele() : OpMode() {
             }
 
             if (gamepad2.right_stick_button) {
-                deliveryHeightGoal = 1400
+                deliveryHeightGoal = robot.specimenDeliveryPosition
             } else {
-                deliveryHeightGoal = 2500
+                deliveryHeightGoal = robot.deliveryMaxHeight
             }
 
             if (gamepad2.right_stick_y > 0.1 && robot.deliveryLiftDownSwitch.voltage < 2) {
@@ -301,17 +301,17 @@ class Tele() : OpMode() {
                 }
             } else
                 if (gamepad2.right_stick_y < 0.1 && robot.deliveryBack.currentPosition < deliveryHeightGoal) {
-                if (robot.deliveryBack.currentPosition > deliveryHeightGoal - 100) {
-                    robot.deliveryFront.power = -0.1
-                    robot.deliveryBack.power = -0.1
+                    if (robot.deliveryBack.currentPosition > deliveryHeightGoal - 100) {
+                        robot.deliveryFront.power = -0.1
+                        robot.deliveryBack.power = -0.1
+                    } else {
+                        robot.deliveryFront.power = gamepad2.right_stick_y.toDouble()
+                        robot.deliveryBack.power = gamepad2.right_stick_y.toDouble()
+                    }
                 } else {
-                    robot.deliveryFront.power = gamepad2.right_stick_y.toDouble()
-                    robot.deliveryBack.power = gamepad2.right_stick_y.toDouble()
+                    robot.deliveryFront.power = 0.0
+                    robot.deliveryBack.power = 0.0
                 }
-            } else {
-                robot.deliveryFront.power = 0.0
-                robot.deliveryBack.power = 0.0
-            }
 
             if (robot.deliveryLiftDownSwitch.voltage > 2 && !resetEncoder) {
                 robot.deliveryBack.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -343,6 +343,12 @@ class Tele() : OpMode() {
 //        telemetry.addData("runtime", runtime)
 
 //        telemetry.addData("Transfer color sensor", robot.transferDistanceSensor.red())
+                telemetry.addData("slides", slidesAngle)
+        telemetry.addData("wrist", wristAngle)
+
+
+
+
         telemetry.update()
     }
 }
