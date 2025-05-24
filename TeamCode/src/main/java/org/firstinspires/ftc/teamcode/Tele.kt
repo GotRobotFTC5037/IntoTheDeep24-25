@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import kotlin.math.abs
 
 @TeleOp(name = "Tele", group="Robot")
-class Tele() : OpMode(), Parcelable {
+class Tele() : OpMode() {
 
     private lateinit var robot: Robot
 
@@ -36,29 +36,6 @@ class Tele() : OpMode(), Parcelable {
 
 
         resetRuntime()
-    }
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeByte(if (dpadRightPressed) 1 else 0)
-        parcel.writeByte(if (aPressed) 1 else 0)
-        parcel.writeDouble(wristAngle)
-        parcel.writeDouble(slidesAngle)
-        parcel.writeByte(if (sequenceRunning) 1 else 0)
-        parcel.writeInt(actionStage)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<Tele> {
-        override fun createFromParcel(parcel: Parcel): Tele {
-            return Tele(parcel)
-        }
-
-        override fun newArray(size: Int): Array<Tele?> {
-            return arrayOfNulls(size)
-        }
     }
 
     override fun start() {

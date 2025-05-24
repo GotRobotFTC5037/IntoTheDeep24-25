@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.DistanceSensor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
+import org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -45,9 +46,9 @@ class Robot(val hardwareMap: HardwareMap) {
     // Servo Positions
     public val deliveryGripperOpen = 0.2
     public val deliveryGripperClosed = 0.0
-    public val deliveryPivotLow = 0.93
-    public val deliveryPivotMedium = 0.55
-    public val deliveryPivotHigh = 0.2
+    public val deliveryPivotLow = 0.28
+    public val deliveryPivotMedium = 0.62
+    public val deliveryPivotHigh = 0.95
 
     public val specimenDeliveryPosition = 1300
     public val deliveryMaxHeight = 2500
@@ -65,16 +66,26 @@ class Robot(val hardwareMap: HardwareMap) {
     public val intakePivotUp = 0.0
     public val intakePivotMid = .25
 
-    public val intakeSlideMax = 1.0
-    public val intakeSlideMid = .55
-    public val intakeSlideMin = .37
+    public val intakeSlideMax = 0.0
+    public val intakeSlideMid = .4
+    public val intakeSlideMin = .54
 
-    public val intakeWristMid = 0.5
-    public val intakeWristLeft = 0.13
-    public val intakeWristRight = 0.85
+    public val intakeWristMid = 0.475
+    public val intakeWristLeft = 0.8
+    public val intakeWristRight = 0.15
 
     var inPerTick: Double = 0.00110697703 * 903.361111296
 
+
+
+    // Roadrunner
+//    val roadrunnerMecanumDrive: MecanumDrive
+//    private val voltageSensor: VoltageSensor = hardwareMap.get(VoltageSensor::class.java,"Control Hub")
+//    private val lazyImu: LazyImu = hardwareMap.get(LazyImu::class.java,"imu")
+//    private val par0: OverflowEncoder = hardwareMap.get(OverflowEncoder::class.java, "par0")
+//    private val par1: OverflowEncoder = hardwareMap.get(OverflowEncoder::class.java, "par1")
+//    private val perp: OverflowEncoder = hardwareMap.get(OverflowEncoder::class.java, "perp")
+//    private val pose: Pose2d = hardwareMap.get(Pose2d::class.java, "pose")
 
     init {
         frontLeft.direction = DcMotorSimple.Direction.REVERSE
@@ -256,13 +267,9 @@ class Robot(val hardwareMap: HardwareMap) {
         frontRight.power = rightFrontPower
         backLeft.power = leftBackPower
         backRight.power = rightBackPower
+
+
     }
 
-    fun initializeInAuto() {
-        intakeSlide.position = intakeSlideMin
-        deliveryPivot.position = deliveryPivotLow
-        intakeWrist.position = intakeWristLeft
-        deliveryGripper.position = deliveryGripperClosed
-        intakeGripper.position = intakeGripperNeutral
-    }
+
 }
