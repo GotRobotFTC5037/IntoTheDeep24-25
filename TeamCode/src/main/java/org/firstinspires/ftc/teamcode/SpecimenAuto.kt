@@ -85,7 +85,7 @@ class SpecimenAuto : OpMode() {
     fun buildPaths() {
         action1ScorePreload = robot.follower.pathBuilder()
             .addPath(
-                BezierCurve(
+                 BezierCurve(
                     Point(startPose),
                     Point(scorePreloadControlPoint1),
                     Point(scorePreloadControlPoint2),
