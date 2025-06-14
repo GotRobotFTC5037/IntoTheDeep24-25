@@ -28,12 +28,18 @@ class BasketAuto : OpMode() {
     private var actionStage = 0
     private var sadAngle = 4
 
-    private val startPose = Pose(8.5, 9.0, Math.toRadians(90.0))
+    private val startPose = Pose(9.0, 9.5, Math.toRadians(90.0))
     private val scoreSample = Pose(15.5, 33.1, Math.toRadians(130.0))
-    private val grabRightSample = Pose(20.0, 32.5, Math.toRadians(335.0 + sadAngle))
+
     private val grabMidSample = Pose(20.0, 32.5, Math.toRadians(0.0 + sadAngle))
-    private val grabLeftSample = Pose(20.5, 32.5, Math.toRadians(17.0 + sadAngle))
-    private val park = Pose(18.3, 30.0, Math.toRadians(135.0))
+
+    // Sample closer to submersible
+    private val grabRightSample = Pose(20.0, 32.5, Math.toRadians(335.0 + sadAngle))
+
+    // Sample closer to the wall
+    private val grabLeftSample = Pose(20.5, 32.5, Math.toRadians(22.0 + sadAngle))
+
+    private val park = Pose(25.0, 25.0, Math.toRadians(0.0))
 
 
     private var action1scorePreload: PathChain? = null
@@ -44,8 +50,6 @@ class BasketAuto : OpMode() {
     private var action6GrabMid: PathChain? = null
     private var action7Deliver4: PathChain? = null
     private var action8Park: PathChain? = null
-
-
 
 
     fun buildPaths() {
@@ -429,9 +433,6 @@ class BasketAuto : OpMode() {
                     pathState = -1
                 }
             }
-
-
-
         }
     }
 

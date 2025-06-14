@@ -95,7 +95,7 @@ class Tele() : OpMode() {
 
                     3 -> {
                         if (runtime >= .45) {
-                            robot.intakeSlide.position = robot.intakeSlideMin
+                            robot.intakeSlide.position = robot.intakeSlideMin + 0.05
                             resetRuntime()
                             actionStage++
                         }
@@ -196,13 +196,13 @@ class Tele() : OpMode() {
                 if (wristAngle <= robot.intakeWristLeft) {
                     wristAngle = robot.intakeWristLeft
                 } else {
-                    wristAngle -= (.006 * gamepad2.left_trigger)
+                    wristAngle -= (.01 * gamepad2.left_trigger)
                 }
             } else if (gamepad2.right_trigger > 0.01) {
                 if (wristAngle >= robot.intakeWristRight) {
                     wristAngle = robot.intakeWristRight
                 } else {
-                    wristAngle += (.006 * gamepad2.right_trigger)
+                    wristAngle += (.01 * gamepad2.right_trigger)
                 }
             }
 
@@ -292,7 +292,7 @@ class Tele() : OpMode() {
             }
 
             if (gamepad2.right_stick_y > 0.1 && robot.deliveryLiftDownSwitch.voltage < 2) {
-                if (robot.deliveryBack.currentPosition < 300) {
+                if (robot.deliveryBack.currentPosition < 100) {
                     robot.deliveryFront.power = 0.0
                     robot.deliveryBack.power = 0.0
                 } else {

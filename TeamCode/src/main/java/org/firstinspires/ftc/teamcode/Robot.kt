@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode
 import com.pedropathing.follower.Follower
 import com.pedropathing.follower.FollowerConstants
 import com.pedropathing.localization.Encoder
+import com.pedropathing.localization.GoBildaPinpointDriver
 import com.pedropathing.localization.Localizers
+import com.pedropathing.localization.constants.PinpointConstants
 import com.pedropathing.localization.constants.ThreeWheelConstants
 import com.pedropathing.util.Constants
 import com.qualcomm.robotcore.hardware.AnalogInput
@@ -16,6 +18,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.PIDCoefficients
 import com.qualcomm.robotcore.hardware.PIDFCoefficients
 import com.qualcomm.robotcore.hardware.Servo
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -24,7 +27,7 @@ class Robot(val hardwareMap: HardwareMap) {
 
     object RobotFollowerConstants {
         init {
-            FollowerConstants.localizers = Localizers.THREE_WHEEL
+            FollowerConstants.localizers = Localizers.PINPOINT
 
             FollowerConstants.leftFrontMotorName = "fl"
             FollowerConstants.leftRearMotorName = "bl"
@@ -53,7 +56,7 @@ class Robot(val hardwareMap: HardwareMap) {
                 0.0
             ) // Not being used, @see useSecondaryTranslationalPID
 
-            FollowerConstants.headingPIDFCoefficients.setCoefficients(3.0, 0.0, 0.04, 0.0)
+            FollowerConstants.headingPIDFCoefficients.setCoefficients(2.2, 0.0, 0.08, 0.0)
             FollowerConstants.useSecondaryHeadingPID = false
             FollowerConstants.secondaryHeadingPIDFCoefficients.setCoefficients(
                 2.0,
@@ -62,7 +65,7 @@ class Robot(val hardwareMap: HardwareMap) {
                 0.0
             ) // Not being used, @see useSecondaryHeadingPID
 
-            FollowerConstants.drivePIDFCoefficients.setCoefficients(0.01, 0.0, 0.000008, 0.6, 0.0)
+            FollowerConstants.drivePIDFCoefficients.setCoefficients(0.03, 0.0, 0.0005, 0.6, 0.0)
             FollowerConstants.useSecondaryDrivePID = false
             FollowerConstants.secondaryDrivePIDFCoefficients.setCoefficients(
                 0.1,
@@ -85,18 +88,31 @@ class Robot(val hardwareMap: HardwareMap) {
 
     object RobotLocalizerConstants {
         init {
-            ThreeWheelConstants.forwardTicksToInches = 5.550756173558269E-4
-            ThreeWheelConstants.strafeTicksToInches = -0.0005588014227266739
-            ThreeWheelConstants.turnTicksToInches = 0.0005589587
-            ThreeWheelConstants.leftY = 6.109
-            ThreeWheelConstants.rightY = -6.109
-            ThreeWheelConstants.strafeX = 6.391
-            ThreeWheelConstants.leftEncoder_HardwareMapName = "fl"
-            ThreeWheelConstants.rightEncoder_HardwareMapName = "fr"
-            ThreeWheelConstants.strafeEncoder_HardwareMapName = "br"
-            ThreeWheelConstants.leftEncoderDirection = Encoder.REVERSE
-            ThreeWheelConstants.rightEncoderDirection = Encoder.FORWARD
-            ThreeWheelConstants.strafeEncoderDirection = Encoder.REVERSE
+//            ThreeWheelConstants.forwardTicksToInches = 5.550756173558269E-4
+//            ThreeWheelConstants.strafeTicksToInches = -0.0005588014227266739
+//            ThreeWheelConstants.turnTicksToInches = 0.0005589587
+//            ThreeWheelConstants.leftY = 6.109
+//            ThreeWheelConstants.rightY = -6.109
+//            ThreeWheelConstants.strafeX = 6.391
+//            ThreeWheelConstants.leftEncoder_HardwareMapName = "fl"
+//            ThreeWheelConstants.rightEncoder_HardwareMapName = "fr"
+//            ThreeWheelConstants.strafeEncoder_HardwareMapName = "br"
+//            ThreeWheelConstants.leftEncoderDirection = Encoder.REVERSE
+//            ThreeWheelConstants.rightEncoderDirection = Encoder.FORWARD
+//            ThreeWheelConstants.strafeEncoderDirection = Encoder.REVERSE
+
+            PinpointConstants.forwardY = -3.25;
+            PinpointConstants.strafeX = -7.25 ;
+            PinpointConstants.distanceUnit = DistanceUnit.INCH;
+            PinpointConstants.hardwareMapName = "pinpoint";
+            PinpointConstants.useYawScalar = false;
+            PinpointConstants.yawScalar = 1.0;
+            PinpointConstants.useCustomEncoderResolution = false;
+            PinpointConstants.encoderResolution = GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD;
+            PinpointConstants.customEncoderResolution = 13.26291192;
+            PinpointConstants.forwardEncoderDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;
+            PinpointConstants.strafeEncoderDirection = GoBildaPinpointDriver.EncoderDirection.REVERSED;
+
         }
     }
 
@@ -127,7 +143,7 @@ class Robot(val hardwareMap: HardwareMap) {
     // Servo Positions
     val deliveryGripperOpen = 0.2
     val deliveryGripperClosed = 0.0
-    val deliveryPivotLow = 0.93
+    val deliveryPivotLow = 0.94
     val deliveryPivotMedium = 0.55
     val deliveryPivotHigh = 0.2
 
@@ -149,10 +165,10 @@ class Robot(val hardwareMap: HardwareMap) {
 
     val intakeSlideMax = 1.0
     val intakeSlideMid = .6
-    val intakeSlideMin = .37
-    val intakeSlideAutoLeft = 0.89
-    val intakeSlideAutoRight = 0.89
-    val intakeSlideAutoMid = 0.84
+    val intakeSlideMin = .38
+    val intakeSlideAutoLeft = 0.87
+    val intakeSlideAutoRight = 0.84
+    val intakeSlideAutoMid = 0.78
 
     val intakeWristMid = 0.5
     val intakeWristLeft = 0.13
@@ -224,7 +240,7 @@ class Robot(val hardwareMap: HardwareMap) {
 
     fun moveLiftToPosition(targetPosition: Int, power: Double) {
 
-        if(targetPosition > deliveryBack.currentPosition) {
+        if (targetPosition > deliveryBack.currentPosition) {
             deliveryBack.power = -power
             deliveryFront.power = -power
         } else {
@@ -233,7 +249,7 @@ class Robot(val hardwareMap: HardwareMap) {
         }
     }
 
-    fun  moveLiftToBottom() {
+    fun moveLiftToBottom() {
         if(deliveryBack.currentPosition > 300) {
             deliveryBack.power = 0.4
             deliveryFront.power = 0.4
@@ -250,6 +266,7 @@ class Robot(val hardwareMap: HardwareMap) {
         deliveryGripper.position = deliveryGripperClosed
         intakeGripper.position = intakeGripperNeutral
         specimenGripper.position = specimenGripperClosed
+        intakePivot.position = intakePivotUp
 
     }
 
